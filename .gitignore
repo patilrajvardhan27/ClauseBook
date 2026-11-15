@@ -1,0 +1,53 @@
+# AI tooling / agent config -- never shipped with the product
+CLAUDE.md
+.claude/
+.claude-*
+AGENTS.md
+agents.md
+.agent/
+.cursor/
+.cursorrules
+.windsurfrules
+.copilot/
+*.agent.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+
+# Data (large, fetched by pipelines, not committed)
+data/bronze/
+data/silver/
+data/gold/
+*.onnx
+*.ckpt
+ml/checkpoints/
+
+# Logs
+*.log
+
+# Editors
+.vscode/
+.idea/
