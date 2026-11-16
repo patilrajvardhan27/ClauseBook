@@ -1,7 +1,6 @@
 # Quality gates read by both `clausebook eval` and CI. Values below are
-# placeholders until the first honest run against the real CUAD split and
-# the 150 gold clauses -- see docs/model-cards and section 10 of the plan
-# for how each one gets its real starting number, then held.
+# placeholders until a real run against the CUAD split and the 150 gold
+# clauses sets each one's real starting number, which then gets held.
 segmentation:
   boundary_f1_min: 0.70
   max_drop_points: 2.0

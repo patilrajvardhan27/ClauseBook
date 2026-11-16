@@ -28,13 +28,13 @@ web app.
 ## Gold placement labels
 
 150 hand-labeled clauses, scored against the placement engine for matched-position and fallback
-accuracy. Not included as data in this repository — see
+accuracy. Not included as data in this repository. See
 [`eval/fixtures/gold_clauses.schema.md`](../eval/fixtures/gold_clauses.schema.md) for the format
-and the labeling process, including the second-rater Cohen's kappa check this plan calls for
-before trusting the full set.
+and the labeling process, including the second-rater Cohen's kappa check to run before trusting
+the full set.
 
 ## Download dates
 
-Recorded in `data/bronze/*/manifest.json` at download time (not committed — `data/` is
+Recorded in `data/bronze/*/manifest.json` at download time (not committed; `data/` is
 gitignored). Each manifest carries the source URL, the SHA-256 of the downloaded archive, and the
 license string, per the rule that every dataset's provenance must be checkable after the fact.

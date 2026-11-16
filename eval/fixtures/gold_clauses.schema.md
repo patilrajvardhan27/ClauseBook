@@ -1,9 +1,9 @@
 # Gold clause label schema
 
-150 hand-labeled clauses are what section 10 of the build plan scores the
-placement engine against. They are not included in this repository as
-data, because they do not exist yet -- labeling them is a manual task for
-whoever runs this project, not something to fabricate.
+150 hand-labeled clauses are what the placement engine gets scored against.
+They are not included in this repository as data, because they do not
+exist yet; labeling them is a manual task for whoever runs this project,
+not something to fabricate.
 
 ## Format
 
@@ -21,20 +21,24 @@ whoever runs this project, not something to fabricate.
 
 ## Process (do this yourself; do not skip it)
 
-1. Pull 150 clauses across the eight v1 categories from the CUAD gold
-   segments (`pipelines/gold/segments.py`), weighted toward categories with
-   fewer examples so no category is left with under 10 labels.
-2. Label all 150 against the sample playbook's ladder (or your own, if you
-   have replaced it) using the preview endpoint to sanity-check each call.
-3. Ask one other person -- a law student or a colleague who reads
-   contracts -- to label 50 of the 150 blind, with no view of your labels.
+1. Run `python3 pipelines/sampling/draw_gold_sample.py` to draw 150 clauses
+   across the eight v1 categories from the CUAD gold segments, at least 10
+   per category, at most 2 per contract, with a fixed random seed so the
+   draw is reproducible. It writes `eval/fixtures/gold_clauses_draft.csv`
+   with everything but the label columns filled in.
+2. Label all 150 yourself against the sample playbook's ladder (or your
+   own, if you've replaced it). Make your own call on each clause before
+   checking `/v1/playbooks/{id}/preview`; looking first just means you end
+   up labeling what the engine already said, not testing it.
+3. Ask one other person (a law student or a colleague who reads contracts)
+   to label 50 of the 150 blind, with no view of your labels.
 4. Run `python3 ml/eval/kappa.py eval/fixtures/gold_clauses.csv` to get
    Cohen's kappa on the 50 shared rows.
 5. If kappa is under 0.6, the position definitions are ambiguous, not the
-   labelers. Tighten the conditions in the playbook (section 4.3's
-   `position_condition` rows) and relabel the 50 before trusting the rest.
+   labelers. Tighten the playbook's `position_condition` rows and relabel
+   the 50 before trusting the rest.
 
-## Illustrative rows (not real labels -- shape only)
+## Illustrative rows (not real labels, shape only)
 
 `eval/fixtures/gold_clauses.sample.csv` holds three rows built from the
 sample playbook seeded by `pipelines/seed/run_seed.py`, so `ml/eval/kappa.py`

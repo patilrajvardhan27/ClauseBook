@@ -4,8 +4,7 @@ Contract review that knows a firm's playbook. Clausebook reads a counterparty dr
 clause, places it against the firm's ordered positions (preferred, fallbacks, walk-away), and
 proposes the right fallback as a minimal tracked change in Word, with the precedent it came from.
 
-Built as a portfolio project targeting a forward-deployed AI engineer role. Not affiliated with
-or endorsed by any commercial contract-review product.
+Not affiliated with or endorsed by any commercial contract-review product.
 
 ## The problem
 
@@ -14,28 +13,28 @@ failures, and each one is a design requirement, not a bug to patch later.
 
 ![Four failures behind a bad fallback, and Clausebook's answer to each](docs/images/problem-solution.svg)
 
-The short version for an interview: **fallback selection is a ranking problem over an ordered set
-with conditions, not a retrieval problem.** Retrieval only supplies evidence — a precedent clause
-that shows a position has been accepted before. The decision of *which* position to propose comes
-from the firm's ladder order and a handful of per-attribute rules.
+Short version: fallback selection is a ranking problem over an ordered set with conditions, not a
+retrieval problem. Retrieval only supplies evidence (a precedent clause that shows a position has
+been accepted before). The decision of *which* position to propose comes from the firm's ladder
+order and a handful of per-attribute rules.
 
 ## The solution
 
 1. **Segment** the document into clause-sized spans, numbered-heading first, sentence-boundary as
    a fallback for contracts with no numbering at all.
-2. **Classify** each segment's clause type on its text, not its heading — a multi-label model,
-   because a clause can carry more than one category, and headings lie.
+2. **Classify** each segment's clause type on its text, not its heading. A clause can carry more
+   than one category, and headings lie, so this is a multi-label model.
 3. **Extract** the deal terms that actually matter (cap multiple, notice days, carve-outs) with
    deterministic rules first; a schema-validated model fills only what rules miss.
 4. **Place** the clause on the firm's ordered ladder: find where it sits today, then find the best
    position ahead of that which the counterparty hasn't already rejected in this negotiation.
 5. **Redline** the clause as a word-level minimal diff from the counterparty's text to the
-   approved language — insert/delete hunks, never a block replacement.
+   approved language: insert/delete hunks, never a block replacement.
 
 ![The placement algorithm's decision flow](docs/images/placement-flow.svg)
 
-Every decision carries its evidence: the extracted attributes, the retrieved precedent, and the
-rule that fired — stored on the finding, not re-derived after the fact, so a lawyer can always see
+Every decision carries its evidence (the extracted attributes, the retrieved precedent, and the
+rule that fired), stored on the finding, not re-derived after the fact, so a lawyer can always see
 why a fallback was proposed.
 
 ## System architecture
@@ -45,17 +44,17 @@ job queue driving a worker pipeline, and a derived OpenSearch precedent index](d
 
 Six decisions, each recorded as an ADR in [`docs/adr/`](docs/adr/):
 
-1. **[Postgres job queue](docs/adr/0001-postgres-job-queue.md)** instead of a broker — a job and
+1. **[Postgres job queue](docs/adr/0001-postgres-job-queue.md)** instead of a broker: a job and
    its review commit in one transaction.
-2. **[Outbox to OpenSearch](docs/adr/0002-outbox-to-opensearch.md)** — Postgres stays the source of
+2. **[Outbox to OpenSearch](docs/adr/0002-outbox-to-opensearch.md)**: Postgres stays the source of
    truth; the search index is derived and rebuildable.
-3. **[Rules before models](docs/adr/0003-rules-before-models.md)** — deterministic extraction and
+3. **[Rules before models](docs/adr/0003-rules-before-models.md)**: deterministic extraction and
    placement run first; a model only fills what rules can't reach.
-4. **[Streaming findings](docs/adr/0004-streaming-findings.md)** — SSE events per clause, so the
+4. **[Streaming findings](docs/adr/0004-streaming-findings.md)**: SSE events per clause, so the
    first finding on a 100-page contract arrives in seconds, not minutes.
-5. **[Row-level security](docs/adr/0005-row-level-security.md)** — tenant isolation enforced in
+5. **[Row-level security](docs/adr/0005-row-level-security.md)**: tenant isolation enforced in
    Postgres, not only in application code.
-6. **[No customer data in training](docs/adr/0006-no-customer-data-in-training.md)** — a firm's
+6. **[No customer data in training](docs/adr/0006-no-customer-data-in-training.md)**: a firm's
    documents feed only that firm's own precedent index.
 
 ## Repository layout
@@ -75,7 +74,7 @@ clausebook/
   docs/                        ADRs, images, data sources
 ```
 
-One placement engine, imported by both the API (preview) and the worker (full review) — never a
+One placement engine, imported by both the API (preview) and the worker (full review), never a
 second copy. Every source file stays under 250 lines by design; `scripts/check-file-length.mjs`
 enforces it in CI.
 
@@ -100,12 +99,11 @@ PYTHONPATH=.:libs python3 ml/eval/cli.py    # writes eval/report.md
 node scripts/check-file-length.mjs
 ```
 
-## What's real in this slice, and what's a stub
+## Known limits
 
-This was built end to end and verified against a real Postgres 16 container: the migration applies
-cleanly, the eight sample playbooks seed correctly, and a pasted clause through
-`POST /v1/playbooks/{id}/preview` is extracted, laddered, and gets back the right fallback with a
-plain-language reason — not a mocked response.
+Verified against a real Postgres 16 container: the migration applies cleanly, the eight sample
+playbooks seed correctly, and a pasted clause through `POST /v1/playbooks/{id}/preview` is
+extracted, laddered, and gets back the right fallback with a plain-language reason.
 
 What's genuinely exercised:
 - The ontology (15 tables), migrated and queried against live Postgres.
@@ -117,31 +115,36 @@ What's genuinely exercised:
   type-checked end to end.
 - The web app and the Word add-in, both building clean under `tsc`.
 
-What's a documented stub, not a finished result:
-- **Classification** ships a TF-IDF baseline trained on a dozen hand-written sentences
-  (`ml/classify/sample_training_set.py`), not the fine-tuned Legal-BERT model the plan calls for —
-  that needs the real CUAD download and GPU training time this environment doesn't have.
+What's still open, and why:
+- **Classification** runs a TF-IDF baseline trained on a dozen hand-written sentences
+  (`ml/classify/sample_training_set.py`). `ml/classify/train.py` trains it on the real CUAD split
+  with a contract-grouped holdout; fine-tuning the Legal-BERT model in `ml/classify/transformer.py`
+  needs a GPU this environment doesn't have, so both need to run on a machine with CUAD downloaded.
 - **Retrieval** (`ml/retrieve/hybrid.py`) is real code against a real OpenSearch query shape, but
-  has no populated index to query against yet.
-- **The 150 gold-labeled clauses** don't exist as data — see
+  the index has nothing in it yet. `pipelines/seed/cuad_precedent.py` writes gold segments as
+  precedent rows; the existing outbox relay (`services/worker/outbox.py`) is what gets them into
+  OpenSearch, by design (see ADR 2).
+- **The 150 gold-labeled clauses** don't exist as data. See
   [`eval/fixtures/gold_clauses.schema.md`](eval/fixtures/gold_clauses.schema.md) for the schema and
   the labeling process, including the second-rater kappa check. Three illustrative rows stand in
-  for CI.
-- **The Word add-in's Office.js calls** (locate, highlight, tracked-change apply) are written
-  against the documented API and type-check against `@types/office-js`, but have not been run
-  inside a live Word host.
+  for CI. `pipelines/sampling/draw_gold_sample.py` draws the 150 candidates; labeling them is
+  manual work no script can do.
+- **The Word add-in's Office.js calls** (locate, highlight, tracked-change apply) type-check
+  against `@types/office-js` but haven't run inside a live Word host yet.
+- **`eval/thresholds.yaml`** still holds placeholder numbers. They get replaced with real ones
+  once the suites above have a real run to measure against.
 
 ## Data sources and attribution
 
-- **CUAD v1** — 510 commercial contracts, lawyer-labeled spans across 41 categories. The Atticus
+- **CUAD v1**: 510 commercial contracts, lawyer-labeled spans across 41 categories. The Atticus
   Project, CC BY 4.0.
-- **ACORD** — expert-rated query/clause pairs, CC BY 4.0, for retrieval evaluation.
+- **ACORD**: expert-rated query/clause pairs, CC BY 4.0, for retrieval evaluation.
 
 Full attribution, download dates and license terms: [`docs/data-sources.md`](docs/data-sources.md).
 
 ## Sample playbooks
 
 The eight clause-type ladders in `pipelines/seed/sample_playbooks.py` are not any real firm's
-guidance — they're written from public drafting commentary as a stand-in so the product has
+guidance. They're written from public drafting commentary as a stand-in so the product has
 something realistic to run against. The web app labels anything seeded from this fixture "sample"
 on screen.
