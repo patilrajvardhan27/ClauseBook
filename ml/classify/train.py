@@ -23,7 +23,7 @@ N_FOLDS = 5
 
 
 # One gold segment's text, contract id, heading and the categories its span overlap gave it.
-def _load_rows() -> list[dict]:
+def load_gold_rows() -> list[dict]:
     with GOLD_SEGMENTS_PATH.open() as f:
         rows = list(csv.DictReader(f))
     for row in rows:
@@ -76,7 +76,7 @@ def heading_disagreement_rate(rows: list[dict]) -> float:
 
 
 def main() -> None:
-    rows = _load_rows()
+    rows = load_gold_rows()
     print(f"Loaded {len(rows)} labeled gold segments across {len({r['contract_id'] for r in rows})} contracts")
 
     results = cross_validate(rows)
