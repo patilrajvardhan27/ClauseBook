@@ -118,8 +118,9 @@ What's genuinely exercised:
 What's still open, and why:
 - **Classification** runs a TF-IDF baseline trained on a dozen hand-written sentences
   (`ml/classify/sample_training_set.py`). `ml/classify/train.py` trains it on the real CUAD split
-  with a contract-grouped holdout; fine-tuning the Legal-BERT model in `ml/classify/transformer.py`
-  needs a GPU this environment doesn't have, so both need to run on a machine with CUAD downloaded.
+  with a contract-grouped holdout, and `ml/classify/transformer.py` fine-tunes Legal-BERT on the
+  same split; the fine-tuning run needs a GPU, so it's meant for a Colab T4 or similar, not a
+  laptop.
 - **Retrieval** (`ml/retrieve/hybrid.py`) is real code against a real OpenSearch query shape, but
   the index has nothing in it yet. `pipelines/seed/cuad_precedent.py` writes gold segments as
   precedent rows; the existing outbox relay (`services/worker/outbox.py`) is what gets them into
