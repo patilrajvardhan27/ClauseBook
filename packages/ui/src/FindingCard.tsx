@@ -3,6 +3,7 @@ import { DiffView } from "./DiffView";
 
 type Status = "in_playbook" | "fallback_proposed" | "outside_playbook";
 
+// Derives a finding's display status from its matched and proposed positions.
 function statusOf(finding: FindingOut): Status {
   if (!finding.proposed_position_id) return "in_playbook";
   if (!finding.matched_position_id) return "outside_playbook";
@@ -21,8 +22,7 @@ const COLOR_BY_STATUS: Record<Status, string> = {
   outside_playbook: "var(--cb-red)",
 };
 
-// The one card both apps/web's review page and apps/addin's task pane
-// render for a finding, so a status color or a layout change happens once.
+// The one finding card shared by the web app's review page and the add-in's task pane.
 export function FindingCard({ finding, onDecide }: {
   finding: FindingOut;
   onDecide?: (decision: "accepted" | "rejected") => void;

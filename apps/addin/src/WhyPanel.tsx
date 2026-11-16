@@ -1,7 +1,6 @@
 import type { FindingOut } from "@clausebook/api-client";
 
-// Matched position, target position, extracted terms and the precedent
-// used -- the plan's "Why" panel, so Accept is never a leap of faith.
+// Shows why a fallback was proposed: the rule, the extracted terms, and the precedent behind it.
 export function WhyPanel({ finding }: { finding: FindingOut }) {
   return (
     <div className="cb-panel" style={{ marginTop: "0.5rem", fontSize: "0.85rem" }}>

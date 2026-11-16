@@ -8,6 +8,7 @@ const LINKS = [
   { to: "/about", label: "About" },
 ];
 
+// Top navigation bar shared across every page.
 export function NavBar() {
   return (
     <header style={{ background: "var(--cb-night)", color: "var(--cb-surface)" }}>

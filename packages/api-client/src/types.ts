@@ -1,12 +1,13 @@
-// Mirrors services/api/schemas.py. Hand-kept in this slice; a generated
-// client from contracts/openapi/openapi.json replaces this file once the
-// OpenAPI generator step is wired into the build.
+// Mirrors services/api/schemas.py; hand-kept until a generated client replaces it.
+
+// The deal context a placement is evaluated against.
 export interface DealContext {
   party_role?: string;
   deal_size_band?: string;
   counterparty_type?: string;
 }
 
+// A review run.
 export interface ReviewOut {
   id: string;
   document_id: string;
@@ -16,6 +17,7 @@ export interface ReviewOut {
   finished_at: string | null;
 }
 
+// One clause's finding.
 export interface FindingOut {
   id: string;
   segment_id: string;
@@ -34,16 +36,19 @@ export interface FindingOut {
   decision: "accepted" | "rejected" | "edited" | null;
 }
 
+// One run of equal, inserted or deleted text in a word-level diff.
 export interface DiffHunk {
   op: "equal" | "insert" | "delete";
   text: string;
 }
 
+// One retrieved precedent and its fused rank score.
 export interface PrecedentHit {
   precedent_id: string;
   score: number;
 }
 
+// A playbook.
 export interface PlaybookOut {
   id: string;
   firm_id: string;
@@ -53,6 +58,7 @@ export interface PlaybookOut {
   published_at: string | null;
 }
 
+// What the placement engine decided for a previewed clause.
 export interface PreviewResponse {
   attrs: Record<string, unknown>;
   matched_position_id: string | null;

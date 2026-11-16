@@ -4,8 +4,7 @@ import { Skeleton } from "@clausebook/ui";
 
 const client = createClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "" });
 
-// Market percentiles and override rates; co-occurrence rules (Apriori)
-// are a should-ship item per the plan and are not wired into this page yet.
+// Shows override rates; market percentiles and co-occurrence rules aren't wired in yet.
 export default function AnalyticsPage() {
   const [overrides, setOverrides] = useState<{ total_decided: number; rejected: number; override_rate: number } | null>(null);
 

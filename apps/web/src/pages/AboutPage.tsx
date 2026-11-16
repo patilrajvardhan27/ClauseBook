@@ -1,5 +1,4 @@
-// Data sources, attributions and the non-affiliation notice, per the
-// plan's rule that CC BY 4.0 data requires attribution on screen.
+// Data sources, attributions and the non-affiliation notice.
 export default function AboutPage() {
   return (
     <section>
@@ -11,12 +10,12 @@ export default function AboutPage() {
       <h2>Data sources</h2>
       <ul>
         <li>
-          <strong>CUAD v1</strong> &mdash; 510 commercial contracts, lawyer-labeled spans across 41
+          <strong>CUAD v1</strong>: 510 commercial contracts, lawyer-labeled spans across 41
           clause categories. Atticus Project, CC BY 4.0. Used for segmentation and classification
           training data, the precedent corpus, and market statistics.
         </li>
         <li>
-          <strong>ACORD</strong> &mdash; expert-rated query/clause pairs. CC BY 4.0. Used to evaluate
+          <strong>ACORD</strong>: expert-rated query/clause pairs. CC BY 4.0. Used to evaluate
           retrieval quality (NDCG@k).
         </li>
       </ul>

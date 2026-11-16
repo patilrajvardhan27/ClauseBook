@@ -6,8 +6,7 @@ const COLOR_BY_OP: Record<DiffHunk["op"], string | undefined> = {
   delete: "var(--cb-red)",
 };
 
-// Renders word-level diff hunks the way Word shows a tracked change:
-// struck-through deletions, underlined insertions, plain equal runs.
+// Renders diff hunks the way Word shows a tracked change: struck-through deletes, underlined inserts.
 export function DiffView({ hunks }: { hunks: DiffHunk[] }) {
   return (
     <p style={{ lineHeight: 1.6 }}>

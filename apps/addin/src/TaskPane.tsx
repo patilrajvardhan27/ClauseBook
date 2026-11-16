@@ -8,8 +8,7 @@ import { WhyPanel } from "./WhyPanel";
 
 const client = createClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "https://localhost:8000" });
 
-// The task pane: read the document, start a review, stream findings,
-// highlight each clause in place, and apply a tracked change on request.
+// The task pane: start a review, stream findings, highlight clauses, apply tracked changes.
 export default function TaskPane() {
   const [supported, setSupported] = useState(true);
   const [playbooks, setPlaybooks] = useState<PlaybookOut[] | null>(null);
@@ -21,6 +20,7 @@ export default function TaskPane() {
     client.listPlaybooks().then(setPlaybooks).catch(() => setPlaybooks([]));
   }, []);
 
+  // Reads the document body, uploads it, and starts a review against the chosen playbook.
   async function handleStartReview(playbookId: string) {
     const text = await Word.run(async (context) => {
       context.document.body.load("text");
@@ -40,6 +40,7 @@ export default function TaskPane() {
     });
   }
 
+  // Locates a finding's clause in the document and highlights it by status.
   async function highlightFinding(finding: FindingOut): Promise<void> {
     await Word.run(async (context) => {
       const segmentText = finding.evidence.segment_text ?? "";
@@ -56,6 +57,7 @@ export default function TaskPane() {
     });
   }
 
+  // Locates a finding's clause and applies its redline as a tracked change.
   async function handleApply(finding: FindingOut): Promise<void> {
     const segmentText = finding.evidence.segment_text ?? "";
     const hunks = finding.redline.hunks ?? [];

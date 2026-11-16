@@ -3,12 +3,12 @@ import { createClient } from "@clausebook/api-client";
 
 const client = createClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "" });
 
-// Hybrid precedent search (BM25 + kNN, fused and reranked server-side);
-// this page only shapes the query and renders ranked hits.
+// Runs a hybrid precedent search and renders the ranked hits.
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Array<{ precedent_id: string; score: number }>>([]);
 
+  // Submits the query and replaces the results list.
   async function handleSearch(event: React.FormEvent) {
     event.preventDefault();
     const response = await client.search(query);

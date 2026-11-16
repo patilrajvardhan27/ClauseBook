@@ -1,3 +1,4 @@
+// Terms of service copy.
 export default function TermsPage() {
   return (
     <section>

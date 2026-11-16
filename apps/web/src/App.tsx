@@ -8,8 +8,7 @@ import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 
-// One route per page listed in the plan's section 12. Each page owns its
-// own data fetching; App only lays out the shell and the nav.
+// Lays out the shell and routes; each page owns its own data fetching.
 export default function App() {
   return (
     <div>

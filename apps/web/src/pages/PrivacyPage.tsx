@@ -1,3 +1,4 @@
+// Privacy policy copy.
 export default function PrivacyPage() {
   return (
     <section>

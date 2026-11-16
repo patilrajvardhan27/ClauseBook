@@ -4,10 +4,7 @@ import { Skeleton } from "@clausebook/ui";
 
 const client = createClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "" });
 
-// The ladder editor itself (ordered positions, conditions as form rows,
-// preview box) is the heaviest remaining UI piece; this page lists
-// playbooks and marks which ones are sample data, per the plan's rule
-// that synthetic playbooks must say so on screen.
+// Lists playbooks and flags sample ones; the ladder editor itself isn't built yet.
 export default function PlaybooksPage() {
   const [playbooks, setPlaybooks] = useState<PlaybookOut[] | null>(null);
 

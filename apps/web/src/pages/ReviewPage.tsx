@@ -4,9 +4,7 @@ import { FindingCard, Skeleton } from "@clausebook/ui";
 
 const client = createClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "" });
 
-// Lets a lawyer pick an uploaded document and a playbook, start a review,
-// and watch findings arrive. The SSE wiring here mirrors what the add-in's
-// task pane does against the same endpoint.
+// Upload a document, start a review against a playbook, and watch findings stream in.
 export default function ReviewPage() {
   const [playbooks, setPlaybooks] = useState<PlaybookOut[] | null>(null);
   const [findings, setFindings] = useState<FindingOut[]>([]);
@@ -21,6 +19,7 @@ export default function ReviewPage() {
     }).catch(() => setPlaybooks([]));
   }, []);
 
+  // Uploads the selected file and starts a review against the selected playbook.
   async function handleStartReview(event: React.FormEvent) {
     event.preventDefault();
     if (!file || !selectedPlaybookId) return;
@@ -41,6 +40,7 @@ export default function ReviewPage() {
     return () => source.close();
   }, [reviewId]);
 
+  // Sends an accept or reject decision and updates the local finding.
   async function handleDecision(findingId: string, decision: "accepted" | "rejected") {
     const updated = await client.decideFinding(findingId, decision);
     setFindings((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
