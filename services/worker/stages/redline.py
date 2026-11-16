@@ -39,6 +39,9 @@ class RedlineStage(Stage):
                     "precedent_hits": item.get("precedent_hits", []),
                     "reason": placement.reason,
                     "better_attributes": placement.better_attributes,
+                    # Carried so the Word add-in can re-locate this clause in the
+                    # document with no second round trip to fetch segment text.
+                    "segment_text": source_text,
                 },
             )
             ctx.session.add(row)

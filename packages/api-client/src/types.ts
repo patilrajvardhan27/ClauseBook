@@ -25,7 +25,12 @@ export interface FindingOut {
   matched_position_id: string | null;
   proposed_position_id: string | null;
   redline: { hunks?: DiffHunk[]; edit_ratio?: number };
-  evidence: { precedent_hits?: PrecedentHit[]; reason?: string; better_attributes?: string[] };
+  evidence: {
+    precedent_hits?: PrecedentHit[];
+    reason?: string;
+    better_attributes?: string[];
+    segment_text?: string;
+  };
   decision: "accepted" | "rejected" | "edited" | null;
 }
 
