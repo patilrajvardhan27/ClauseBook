@@ -1,0 +1,29 @@
+# Quality gates read by both `clausebook eval` and CI. Values below are
+# placeholders until the first honest run against the real CUAD split and
+# the 150 gold clauses -- see docs/model-cards and section 10 of the plan
+# for how each one gets its real starting number, then held.
+segmentation:
+  boundary_f1_min: 0.70
+  max_drop_points: 2.0
+
+classification:
+  macro_aupr_min: 0.50
+  max_class_drop_points: 3.0
+  macro_may_not_drop: true
+
+extraction:
+  exact_match_min: 0.60
+  max_drop_points: 0.0
+
+retrieval:
+  ndcg_at_5_min: 0.55
+  recall_at_20_min: 0.70
+  max_drop_points: 2.0
+
+placement:
+  matched_position_accuracy_min: 0.70
+  fallback_accuracy_min: 0.65
+  max_drop_points: 0.0
+
+cost_and_latency:
+  p95_regression_max_pct: 20.0

@@ -1,0 +1,65 @@
+# Full local stack: Postgres, OpenSearch, the API, the worker and the web
+# app, plus an OTel collector feeding a local Grafana. `docker compose up`
+# from this directory should be the only setup step a reviewer needs.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: clausebook
+      POSTGRES_PASSWORD: clausebook
+      POSTGRES_DB: clausebook
+    ports: ["5432:5432"]
+    volumes: ["pg-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clausebook"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  opensearch:
+    image: opensearchproject/opensearch:2.17.0
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports: ["9200:9200"]
+    volumes: ["os-data:/usr/share/opensearch/data"]
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    volumes: ["./otel/config.yaml:/etc/otelcol/config.yaml"]
+    command: ["--config=/etc/otelcol/config.yaml"]
+    ports: ["4317:4317", "4318:4318"]
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      CLAUSEBOOK_DATABASE_URL: postgresql+psycopg://clausebook:clausebook@postgres:5432/clausebook
+      CLAUSEBOOK_OPENSEARCH_URL: http://opensearch:9200
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  worker:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.worker
+    environment:
+      CLAUSEBOOK_DATABASE_URL: postgresql+psycopg://clausebook:clausebook@postgres:5432/clausebook
+      CLAUSEBOOK_OPENSEARCH_URL: http://opensearch:9200
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  web:
+    build:
+      context: ../apps/web
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    ports: ["5173:5173"]
+    depends_on: [api]
+
+volumes:
+  pg-data:
+  os-data:

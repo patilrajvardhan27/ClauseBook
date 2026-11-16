@@ -1,0 +1,21 @@
+# Minimal OTel collector: receive traces/metrics over gRPC and HTTP, print
+# them to the console. Swap the exporter for Grafana/Tempo once a local
+# Grafana stack is added; the API and worker instrumentation does not change.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug]
