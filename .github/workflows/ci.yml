@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: ruff check libs ml services pipelines tests
+      - run: mypy libs/clausebook_core --ignore-missing-imports
+
+  file-length:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: node scripts/check-file-length.mjs
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: PYTHONPATH=.:libs pytest tests/ -q
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: clausebook
+          POSTGRES_PASSWORD: clausebook
+          POSTGRES_DB: clausebook
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U clausebook"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CLAUSEBOOK_DATABASE_URL: postgresql+psycopg://clausebook:clausebook@localhost:5432/clausebook
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: cd db/migrations && alembic upgrade head
+      - run: PYTHONPATH=.:libs pytest tests/ -q -m integration
+
+  eval-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: PYTHONPATH=.:libs python3 ml/eval/cli.py
+      - uses: actions/upload-artifact@v4
+        with: { name: eval-report, path: eval/report.md }
+
+  web-and-addin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: npm ci
+      - run: npm run build:web
+      - run: npm run build:addin
+
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with: { languages: python, javascript }
+      - uses: github/codeql-action/analyze@v3
