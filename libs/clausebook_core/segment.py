@@ -1,10 +1,4 @@
-"""Splits a contract's raw text into clause-sized segments.
-
-Numbered and lettered sections first, because that is how most commercial
-contracts are actually structured; a sentence-boundary fallback handles the
-minority with no numbering at all. Neither pass is a model -- segmentation
-runs before classification and has to work with zero training data.
-"""
+# Splits a contract's raw text into clause-sized segments.
 from __future__ import annotations
 
 import re
@@ -19,6 +13,7 @@ _SENTENCE_BOUNDARY = re.compile(r"(?<=[.;])\s+(?=[A-Z])")
 MIN_SEGMENT_CHARS = 40  # shorter spans are almost always headings or stray numbering, not clauses
 
 
+# One clause-sized span of a document's text, before it is persisted.
 @dataclass(frozen=True)
 class RawSegment:
     ord: int
@@ -28,6 +23,7 @@ class RawSegment:
     heading: str | None
 
 
+# Splits document text by numbered headings, falling back to sentence boundaries.
 def segment_text(document_text: str) -> list[RawSegment]:
     headings = list(_SECTION_HEADING.finditer(document_text))
     if len(headings) >= 3:
@@ -35,6 +31,7 @@ def segment_text(document_text: str) -> list[RawSegment]:
     return _segment_by_sentences(document_text)
 
 
+# Splits text at each numbered or lettered section heading.
 def _segment_by_headings(text: str, headings: list[re.Match]) -> list[RawSegment]:
     segments: list[RawSegment] = []
     bounds = [h.start() for h in headings] + [len(text)]
@@ -49,6 +46,7 @@ def _segment_by_headings(text: str, headings: list[re.Match]) -> list[RawSegment
     return segments
 
 
+# Splits text at sentence boundaries, for contracts with no numbering at all.
 def _segment_by_sentences(text: str) -> list[RawSegment]:
     segments: list[RawSegment] = []
     cursor = 0

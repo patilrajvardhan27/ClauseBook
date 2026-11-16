@@ -1,9 +1,4 @@
-"""Chains the review stages in order, timing and logging each one.
-
-The single place that lists stage order, so adding a stage means one line
-here plus one new file in stages/, never a scattered edit across the
-worker.
-"""
+# Chains the review stages in order, timing and logging each one.
 from __future__ import annotations
 
 import logging
@@ -23,6 +18,7 @@ logger = logging.getLogger("clausebook.worker")
 STAGES = [ParseStage(), SegmentStage(), ClassifyStage(), ExtractStage(), RetrieveStage(), PlaceStage(), RedlineStage()]
 
 
+# Runs every stage in order on one review, stopping at the first failure.
 def run_review_pipeline(ctx: ReviewContext) -> None:
     for stage in STAGES:
         started = time.monotonic()

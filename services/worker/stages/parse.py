@@ -1,7 +1,4 @@
-"""Stage 1: pulls raw text for the document. A real parser (python-docx /
-pdfplumber) plugs in here; this slice reads a plain-text cache keyed by the
-document's SHA-256, which is how the plan's caching rule (section 11) is
-meant to work regardless of parser."""
+# Stage 1: pulls raw text for the document, cached by its SHA-256.
 from __future__ import annotations
 
 from clausebook_core.models.document import Document
@@ -10,6 +7,7 @@ from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 
 
+# Reads cached document text; a real parser (python-docx, pdfplumber) plugs in here.
 class ParseStage(Stage):
     name = "parse"
 

@@ -1,8 +1,4 @@
-"""Loads a playbook's ladder from Postgres into the placement engine's plain
-dataclasses. This is the one place that translates ORM rows to the engine's
-input shape, used by both the preview endpoint and the worker's placement
-stage, so the two never drift into different notions of "the ladder".
-"""
+# Loads a playbook's ladder from Postgres into the placement engine's plain dataclasses.
 from __future__ import annotations
 
 import uuid
@@ -19,6 +15,7 @@ from clausebook_core.placement.types import (
 from sqlalchemy.orm import Session
 
 
+# Loads one clause type's ladder of positions for a playbook.
 def load_ladder(session: Session, playbook_id: uuid.UUID, clause_type_id: uuid.UUID) -> list[PositionSpec]:
     positions = (
         session.query(Position)
@@ -28,6 +25,7 @@ def load_ladder(session: Session, playbook_id: uuid.UUID, clause_type_id: uuid.U
     return [_to_position_spec(p) for p in positions]
 
 
+# Converts one ORM Position row into the engine's PositionSpec.
 def _to_position_spec(position: Position) -> PositionSpec:
     conditions = [
         Condition(
@@ -51,19 +49,20 @@ def _to_position_spec(position: Position) -> PositionSpec:
     )
 
 
+# Looks up an attribute's key from the position's already-loaded conditions.
 def _attribute_key(attribute_id: uuid.UUID, position: Position) -> str:
-    # position.conditions is eagerly joined to attribute in the repo query;
-    # kept as a small lookup here rather than a second query per condition.
     for condition in position.conditions:
         if condition.attribute_id == attribute_id and condition.attribute is not None:
             return condition.attribute.key
     return str(attribute_id)
 
 
+# Unwraps a condition's stored {"value": ...} JSON into the raw value.
 def _condition_value(value_json: dict):
     return value_json.get("value") if isinstance(value_json, dict) and "value" in value_json else value_json
 
 
+# Loads every attribute spec for a clause type, keyed by attribute key.
 def load_attribute_specs(session: Session, clause_type_id: uuid.UUID) -> dict[str, AttributeSpec]:
     attributes = session.query(Attribute).filter(Attribute.clause_type_id == clause_type_id).all()
     return {a.key: AttributeSpec(key=a.key, higher_is_better=a.higher_is_better) for a in attributes}

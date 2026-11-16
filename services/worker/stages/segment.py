@@ -1,4 +1,4 @@
-"""Stage 2: splits document text into clause-sized segments and persists them."""
+# Stage 2: splits document text into clause-sized segments and persists them.
 from __future__ import annotations
 
 from clausebook_core.models.document import Segment
@@ -8,6 +8,7 @@ from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 
 
+# Segments the document text and writes each segment as a row.
 class SegmentStage(Stage):
     name = "segment"
 

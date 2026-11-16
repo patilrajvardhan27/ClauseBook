@@ -1,9 +1,4 @@
-"""One run over one document, and the per-clause result of that run.
-
-finding.evidence_json carries the retrieved precedent ids, the extracted
-attribute spans and the rule results that led to a decision, so every
-proposal in the add-in traces back to something checkable.
-"""
+# One run over one document, and the per-clause result of that run.
 from __future__ import annotations
 
 import uuid
@@ -16,6 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from clausebook_core.models.base import Base, UUIDPk
 
 
+# A single review run over one document against one playbook version.
 class Review(Base, UUIDPk):
     __tablename__ = "review"
 
@@ -28,6 +24,7 @@ class Review(Base, UUIDPk):
     cost_tokens: Mapped[int] = mapped_column(Integer, default=0)
 
 
+# One clause's result: its placement, proposed redline and the evidence behind both.
 class Finding(Base, UUIDPk):
     __tablename__ = "finding"
 

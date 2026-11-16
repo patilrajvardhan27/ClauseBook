@@ -1,9 +1,4 @@
-"""Relays outbox rows written by a review into OpenSearch.
-
-Postgres stays the source of truth for precedent; OpenSearch is a derived
-index that this relay can always rebuild from scratch (ADR 2), so a bad
-index is a replay, never a data-loss incident.
-"""
+# Relays outbox rows into OpenSearch; Postgres stays the source of truth (see ADR 2).
 from __future__ import annotations
 
 from datetime import UTC
@@ -14,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
+# Indexes every unpublished outbox event into OpenSearch and marks it published.
 def relay_pending_events(session: Session, settings: Settings, batch_size: int = 100) -> int:
     try:
         from opensearchpy import OpenSearch, helpers

@@ -1,9 +1,4 @@
-"""Playbook CRUD and the ladder editor underneath it.
-
-Publishing bumps the version instead of mutating rows in place, so a
-review's playbook_version always points at guidance that still exists and
-reads exactly as it did when the review ran.
-"""
+# Playbook CRUD; publishing bumps the version instead of mutating rows in place.
 from __future__ import annotations
 
 import uuid
@@ -20,11 +15,13 @@ from services.api.schemas import PlaybookOut, PreviewRequest, PreviewResponse
 router = APIRouter()
 
 
+# Lists every playbook.
 @router.get("", response_model=list[PlaybookOut])
 def list_playbooks(db: Session = Depends(get_db)) -> list[Playbook]:
     return db.query(Playbook).all()
 
 
+# Creates a new playbook at version 1.
 @router.post("", status_code=201, response_model=PlaybookOut)
 def create_playbook(name: str, side: str, firm_id: uuid.UUID, db: Session = Depends(get_db)) -> Playbook:
     playbook = Playbook(firm_id=firm_id, name=name, side=side, version=1)
@@ -33,6 +30,7 @@ def create_playbook(name: str, side: str, firm_id: uuid.UUID, db: Session = Depe
     return playbook
 
 
+# Bumps a playbook's version and stamps its publish time.
 @router.post("/{playbook_id}/publish", response_model=PlaybookOut)
 def publish_playbook(playbook_id: uuid.UUID, db: Session = Depends(get_db)) -> Playbook:
     playbook = db.get(Playbook, playbook_id)
@@ -42,6 +40,7 @@ def publish_playbook(playbook_id: uuid.UUID, db: Session = Depends(get_db)) -> P
     return playbook
 
 
+# Places a pasted clause against a playbook with no document or review behind it.
 @router.post("/{playbook_id}/preview", response_model=PreviewResponse)
 def preview(playbook_id: uuid.UUID, payload: PreviewRequest, db: Session = Depends(get_db)) -> dict:
     return preview_placement(

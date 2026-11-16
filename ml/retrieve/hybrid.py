@@ -1,13 +1,4 @@
-"""Reciprocal rank fusion of a lexical and a vector search over the same
-OpenSearch index.
-
-BM25 alone misses a clause that is worded completely differently but means
-the same thing; kNN alone drifts on short, formulaic clauses where exact
-phrasing is what distinguishes a cap from an exclusion. Fusing both and
-reranking the top 50 with a cross-encoder outperformed either alone on
-ACORD in the project's own ablation (see eval/report.md once ml/eval has
-run against a live OpenSearch index).
-"""
+# Reciprocal rank fusion of a lexical (BM25) and a vector (kNN) search over the same index.
 from __future__ import annotations
 
 from clausebook_core.config.settings import Settings
@@ -15,16 +6,8 @@ from clausebook_core.config.settings import Settings
 RRF_K = 60  # standard RRF damping constant; higher values favor documents ranked well by both retrievers
 
 
+# Runs BM25 and kNN against OpenSearch and fuses the two ranked lists; empty if the index isn't built yet.
 def hybrid_search(settings: Settings, query: str, clause_type: str | None, top_k: int = 20) -> list[dict]:
-    """Queries OpenSearch for both a BM25 match and a kNN match on the
-    embedding field, fuses the two ranked lists, then reranks the fused top
-    50 with ml/retrieve/reranker.py before truncating to top_k.
-
-    Requires a running OpenSearch index populated by pipelines/gold and the
-    outbox relay (services/worker/outbox.py); returns an empty list rather
-    than raising when the index has not been built yet, so the API stays
-    usable in a bare dev environment.
-    """
     try:
         from opensearchpy import OpenSearch
     except ImportError:
@@ -40,6 +23,7 @@ def hybrid_search(settings: Settings, query: str, clause_type: str | None, top_k
     return fused[:top_k]
 
 
+# Runs a BM25 text match, optionally filtered by clause type.
 def _bm25_search(client, settings: Settings, query: str, clause_type: str | None, size: int) -> list[str]:
     filters = [{"term": {"clause_type": clause_type}}] if clause_type else []
     body = {"size": size, "query": {"bool": {"must": [{"match": {"clause_text": query}}], "filter": filters}}}
@@ -47,6 +31,7 @@ def _bm25_search(client, settings: Settings, query: str, clause_type: str | None
     return [hit["_id"] for hit in response["hits"]["hits"]]
 
 
+# Runs a kNN search on the query's embedding, optionally filtered by clause type.
 def _knn_search(client, settings: Settings, query: str, clause_type: str | None, size: int) -> list[str]:
     from ml.retrieve.embeddings import embed_text
 
@@ -65,6 +50,7 @@ def _knn_search(client, settings: Settings, query: str, clause_type: str | None,
     return [hit["_id"] for hit in response["hits"]["hits"]]
 
 
+# Combines several ranked id lists into one score per document.
 def _reciprocal_rank_fusion(*ranked_id_lists: list[str]) -> list[dict]:
     scores: dict[str, float] = {}
     for ranked_ids in ranked_id_lists:

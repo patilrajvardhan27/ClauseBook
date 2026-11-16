@@ -1,13 +1,10 @@
-"""Runtime configuration, read once from the environment.
-
-Kept in one place so a firm's deployment only ever touches env vars, never
-code, to change where Postgres, OpenSearch or the LLM provider live.
-"""
+# Runtime configuration, read once from the environment.
 from __future__ import annotations
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+# Every env var a deployment can override; nothing here needs a code change.
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CLAUSEBOOK_", env_file=".env", extra="ignore")
 
@@ -21,5 +18,6 @@ class Settings(BaseSettings):
     max_llm_concurrency: int = 4
 
 
+# Builds a fresh Settings instance from the current environment.
 def get_settings() -> Settings:
     return Settings()

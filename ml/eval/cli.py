@@ -1,10 +1,4 @@
-"""`clausebook eval` -- runs the suites this project can run with no live
-infrastructure (placement, extraction) and writes eval/report.md. The
-retrieval, classification and cost/latency suites need a trained model and
-a populated OpenSearch index respectively; they are left as separate
-entrypoints (ml/classify/train.py, ml/retrieve, ml/eval/perf.py) rather than
-silently skipped here.
-"""
+# `clausebook eval` -- runs the suites this project can run with no live infrastructure.
 from __future__ import annotations
 
 import csv
@@ -15,9 +9,8 @@ from ml.eval.thresholds import load_thresholds
 REPORT_PATH = Path("eval/report.md")
 
 
+# Checks extraction against the illustrative gold CSV; swap in the real 150 once labeled.
 def run_extraction_suite() -> dict:
-    """Exact-match accuracy of ml/extract against the illustrative gold CSV.
-    Swap in eval/fixtures/gold_clauses.csv once the real 150 are labeled."""
     from ml.extract.extractors import extract
 
     csv_path = Path("eval/fixtures/gold_clauses.sample.csv")
@@ -33,6 +26,7 @@ def run_extraction_suite() -> dict:
     return {"accuracy": correct / len(rows), "n": len(rows)}
 
 
+# Runs the available suites and writes eval/report.md.
 def main() -> None:
     thresholds = load_thresholds()
     extraction = run_extraction_suite()

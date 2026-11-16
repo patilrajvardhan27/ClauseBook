@@ -1,12 +1,4 @@
-"""Eight sample playbooks covering the v1 clause types.
-
-These are not any real firm's guidance -- they are written from public
-drafting commentary (ABA Model Negotiated terms, published playbook
-articles) as a stand-in so the product has something realistic to run
-against. The web app labels every playbook built from this fixture
-"sample" in its UI, per the plan's rule that synthetic data must say so
-on screen.
-"""
+# Eight sample ladders, not any real firm's guidance. Written from public drafting commentary.
 from __future__ import annotations
 
 # Each entry: (clause_type_cuad_category, attribute_key, attribute_kind,

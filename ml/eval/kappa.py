@@ -1,12 +1,4 @@
-"""Computes Cohen's kappa between two labelers on the shared rows of the
-gold clause CSV. Run as:
-
-    python3 ml/eval/kappa.py eval/fixtures/gold_clauses.csv
-
-Reports only the agreement; it is on the person running this project to
-decide, per docs on the 0.6 threshold, whether the position definitions
-need tightening before the rest of the 150 get trusted.
-"""
+# Computes Cohen's kappa between two labelers on the gold clause CSV's shared rows.
 from __future__ import annotations
 
 import sys
@@ -15,6 +7,7 @@ import pandas as pd
 from sklearn.metrics import cohen_kappa_score
 
 
+# Computes Cohen's kappa between the "primary" and "second_rater" rows sharing a clause_id.
 def compute_kappa(csv_path: str) -> float:
     df = pd.read_csv(csv_path)
     primary = df[df["labeled_by"] == "primary"].set_index("clause_id")

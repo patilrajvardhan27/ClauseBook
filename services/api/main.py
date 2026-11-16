@@ -1,4 +1,4 @@
-"""FastAPI entrypoint. Wires routers; nothing else lives here."""
+# FastAPI entrypoint. Wires routers; nothing else lives here.
 from __future__ import annotations
 
 from fastapi import FastAPI
@@ -23,6 +23,7 @@ app.include_router(search.router, prefix="/v1/search", tags=["search"])
 app.include_router(analytics.router, prefix="/v1/analytics", tags=["analytics"])
 
 
+# Liveness check for the load balancer.
 @app.get("/healthz")
 def healthz() -> dict:
     return {"status": "ok"}

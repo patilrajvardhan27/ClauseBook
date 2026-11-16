@@ -1,9 +1,4 @@
-"""Turns new finding rows into Server-Sent Events as a review runs.
-
-Polls the findings table rather than holding a pub/sub channel open, which
-keeps the API stateless: a lawyer can refresh the task pane mid-review and
-reconnect to the same stream with no session to recover.
-"""
+# Turns new finding rows into Server-Sent Events as a review runs, by polling the findings table.
 from __future__ import annotations
 
 import asyncio
@@ -17,6 +12,7 @@ from sqlalchemy.orm import Session
 POLL_INTERVAL_SECONDS = 1.0
 
 
+# Streams finding_ready, progress, done and error events for a running review.
 def stream_review_events(db: Session, review_id: uuid.UUID) -> StreamingResponse:
     async def event_source():
         seen_finding_ids: set[uuid.UUID] = set()
@@ -44,5 +40,6 @@ def stream_review_events(db: Session, review_id: uuid.UUID) -> StreamingResponse
     return StreamingResponse(event_source(), media_type="text/event-stream")
 
 
+# Formats one event as an SSE wire message.
 def _sse_event(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"

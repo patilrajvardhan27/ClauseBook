@@ -1,8 +1,4 @@
-"""Worker loop entrypoint: claim a job, run the review pipeline, mark it done.
-
-Runs as its own process (see deploy/docker-compose.yml) separate from the
-API, so a slow review never blocks a request thread.
-"""
+# Worker loop entrypoint: claim a job, run the review pipeline, mark it done.
 from __future__ import annotations
 
 import logging
@@ -25,6 +21,7 @@ logger = logging.getLogger("clausebook.worker")
 POLL_SECONDS = 1.0
 
 
+# Polls for a queued review job, runs it, and relays outbox events, forever.
 def main() -> None:
     settings = get_settings()
     factory = build_session_factory(settings)
@@ -42,6 +39,7 @@ def main() -> None:
             time.sleep(POLL_SECONDS)
 
 
+# Runs the pipeline for one claimed job and marks the review and job done or failed.
 def _run_review_job(session, job) -> None:
     review_id = uuid.UUID(job.payload_json["review_id"])
     review = session.get(Review, review_id)

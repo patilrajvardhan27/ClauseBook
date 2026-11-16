@@ -1,12 +1,4 @@
-"""Builds the gold layer: contract text split into segments, each carrying
-every CUAD category whose labeled span overlaps it by 50% or more.
-
-A segment is not required to line up with a CUAD span exactly -- real
-clauses often get labeled mid-sentence -- so the 50% overlap rule is the
-project's definition of "this segment counts as an instance of that
-category", stated once here rather than re-derived in the classifier and
-the eval harness separately.
-"""
+# Builds the gold layer: segments carrying every CUAD category that overlaps them by 50% or more.
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,6 +10,7 @@ from pipelines.silver.cuad import CuadSpan
 OVERLAP_THRESHOLD = 0.5
 
 
+# A segment paired with the CUAD categories whose labeled spans overlap it.
 @dataclass(frozen=True)
 class GoldSegment:
     contract_id: str
@@ -25,6 +18,7 @@ class GoldSegment:
     categories: list[str]
 
 
+# Segments a contract and labels each segment with its overlapping categories.
 def build_gold_segments(contract_id: str, contract_text: str, spans: list[CuadSpan]) -> list[GoldSegment]:
     segments = segment_text(contract_text)
     gold: list[GoldSegment] = []
@@ -40,6 +34,7 @@ def build_gold_segments(contract_id: str, contract_text: str, spans: list[CuadSp
     return gold
 
 
+# Fraction of a span's length that falls inside a given segment.
 def _overlap_fraction(segment: RawSegment, span: CuadSpan, contract_text: str) -> float:
     span_start = span.span_start
     span_end = span_start + len(span.span_text)

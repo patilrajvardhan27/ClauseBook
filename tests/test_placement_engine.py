@@ -1,9 +1,4 @@
-"""Unit tests for the core placement algorithm.
-
-These run with no database and no API key, since the engine takes plain
-dicts and dataclasses. They are the cheapest, fastest tests in the repo and
-the ones that should never be skipped.
-"""
+# Unit tests for the core placement algorithm; no database or API key needed.
 from clausebook_core.placement.engine import place
 from clausebook_core.placement.types import AttributeSpec, Condition, Op, PositionSpec
 
@@ -11,6 +6,7 @@ CAP_MULTIPLE = AttributeSpec(key="cap_multiple", higher_is_better=False)  # lowe
 ATTRS = {"cap_multiple": CAP_MULTIPLE}
 
 
+# Builds a ladder of positions, one per cap-multiple value, with the last rank as walk-away.
 def ladder_with_ranks(values: list[float]) -> list[PositionSpec]:
     return [
         PositionSpec(
@@ -24,6 +20,7 @@ def ladder_with_ranks(values: list[float]) -> list[PositionSpec]:
     ]
 
 
+# A clause already at rank 0 needs no change.
 def test_preferred_position_needs_no_change():
     ladder = ladder_with_ranks([1.0, 2.0, 3.0])
     result = place({"cap_multiple": 1.0}, ladder, {}, ATTRS)
@@ -32,6 +29,7 @@ def test_preferred_position_needs_no_change():
     assert not result.outside_playbook
 
 
+# A clause at a worse rank gets the preferred position proposed as the fallback.
 def test_fallback_is_proposed_over_matched_position():
     ladder = ladder_with_ranks([1.0, 2.0, 3.0])
     result = place({"cap_multiple": 3.0}, ladder, {}, ATTRS)
@@ -40,6 +38,7 @@ def test_fallback_is_proposed_over_matched_position():
     assert result.better_attributes == ["cap_multiple"]
 
 
+# A clause worse than every position flags outside_playbook and proposes the walk-away.
 def test_text_outside_every_position_flags_walk_away():
     ladder = ladder_with_ranks([1.0, 2.0, 3.0])
     result = place({"cap_multiple": 10.0}, ladder, {}, ATTRS)
@@ -48,12 +47,14 @@ def test_text_outside_every_position_flags_walk_away():
     assert result.proposed_position_id == "pos-2"
 
 
+# A previously rejected position is skipped in favor of the next best one.
 def test_rejected_positions_are_not_reproposed():
     ladder = ladder_with_ranks([1.0, 2.0, 3.0])
     result = place({"cap_multiple": 3.0}, ladder, {}, ATTRS, rejected_position_ids={"pos-0"})
     assert result.proposed_position_id == "pos-1"
 
 
+# When every stronger position has been rejected, the engine holds the current match.
 def test_everything_better_already_rejected_holds_current_match():
     ladder = ladder_with_ranks([1.0, 2.0, 3.0])
     result = place(
@@ -63,6 +64,7 @@ def test_everything_better_already_rejected_holds_current_match():
     assert result.matched_position_id == "pos-2"
 
 
+# A position whose applies_when rule fails drops out of the ladder for that deal.
 def test_applies_when_removes_a_position_from_the_ladder():
     ladder = ladder_with_ranks([1.0, 2.0, 3.0])
     from clausebook_core.placement.types import AppliesWhenRule

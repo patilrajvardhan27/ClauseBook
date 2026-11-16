@@ -1,11 +1,4 @@
-"""End-to-end check of the preview path against a real Postgres: seed a
-clause type, a position and approved language, then confirm the preview
-service extracts, ladders and proposes a fallback exactly as a lawyer
-clicking "preview" in the playbook editor would see.
-
-Requires CLAUSEBOOK_DATABASE_URL pointing at a migrated, empty-enough
-database; CI provides one as a service container.
-"""
+# End-to-end check of the preview path against a real Postgres. Needs CLAUSEBOOK_DATABASE_URL set.
 from __future__ import annotations
 
 import uuid
@@ -21,6 +14,7 @@ from services.api.domain.preview_service import preview_placement
 pytestmark = pytest.mark.integration
 
 
+# Seeds a clause type, a ladder and approved language, then checks preview_placement end to end.
 def test_preview_proposes_fallback_over_matched_position():
     settings = get_settings()
     factory = build_session_factory(settings)

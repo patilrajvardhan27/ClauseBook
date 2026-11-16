@@ -1,11 +1,4 @@
-"""Rule evaluation: does a set of extracted attributes satisfy a condition.
-
-This is deliberately the dumbest code in the project. Fallback accuracy
-comes from getting the extraction right and the ladder right, not from a
-clever comparator. A clever comparator is also a comparator nobody can
-audit, and auditability is the point of comparing by rule in the first
-place.
-"""
+# Rule evaluation: does a set of extracted attributes satisfy a condition.
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -13,6 +6,7 @@ from collections.abc import Iterable
 from clausebook_core.placement.types import Condition, Op
 
 
+# Checks one condition against the extracted attributes.
 def check_condition(condition: Condition, attrs: dict) -> bool:
     actual = attrs.get(condition.attribute_key)
     if actual is None:
@@ -39,13 +33,13 @@ def check_condition(condition: Condition, attrs: dict) -> bool:
             raise ValueError(f"Unknown operator: {condition.op}")
 
 
+# Runs every condition in a list and requires all of them to pass.
 def all_conditions_pass(conditions: list[Condition], attrs: dict) -> bool:
     return all(check_condition(c, attrs) for c in conditions)
 
 
+# Checks whether a position's applies_when rules allow it for this deal context.
 def applies_to_context(rules: list, deal_context: dict) -> bool:
-    """A position with no applies_when rules is unconditional. Any rule that
-    fails rules the position out for this deal."""
     for rule in rules:
         actual = deal_context.get(rule.key)
         condition = Condition(attribute_key=rule.key, op=rule.op, value=rule.value)

@@ -1,9 +1,4 @@
-"""Cross-encoder reranking of the top candidates from hybrid retrieval.
-
-A cross-encoder scores (query, candidate) pairs jointly, which is slower
-than the bi-encoder used for kNN but catches ranking errors fusion leaves
-behind -- it only needs to run on the top 50, not the full index.
-"""
+# Cross-encoder reranking of the top candidates from hybrid retrieval.
 from __future__ import annotations
 
 from functools import lru_cache
@@ -11,6 +6,7 @@ from functools import lru_cache
 from clausebook_core.config.settings import Settings
 
 
+# Loads and caches the cross-encoder reranker model by name.
 @lru_cache
 def _load_reranker(model_name: str):
     from sentence_transformers import CrossEncoder
@@ -18,6 +14,7 @@ def _load_reranker(model_name: str):
     return CrossEncoder(model_name)
 
 
+# Scores each candidate against the query and returns them sorted by rerank score.
 def rerank(settings: Settings, query: str, candidates: list[dict]) -> list[dict]:
     if not candidates:
         return []

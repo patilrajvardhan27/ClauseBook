@@ -1,11 +1,4 @@
-"""A small, hand-written stand-in for the real CUAD training split.
-
-CUAD itself (510 contracts, 41 categories, CC BY 4.0) is pulled by
-pipelines/bronze/cuad.py and is too large to vendor here. These dozen
-sentences exist so the classifier, the placement engine and the worker can
-be exercised end to end with no download and no API key -- useful for a
-laptop demo, not a substitute for training on the real corpus.
-"""
+# A small, hand-written stand-in for the real CUAD training split; not a substitute for the real corpus.
 from __future__ import annotations
 
 SAMPLE_TEXTS = [

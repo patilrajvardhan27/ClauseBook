@@ -1,14 +1,10 @@
-"""One extractor function per clause type, returning only what it found.
-
-A missing key means "not found", never zero -- the placement engine treats
-a missing attribute as "condition cannot be satisfied", which is the safe
-default when extraction fails.
-"""
+# One extractor function per clause type; a missing key means "not found", never zero.
 from __future__ import annotations
 
 from ml.extract import patterns as p
 
 
+# Extracts cap basis, cap multiple or amount, lookback months, and carve-outs.
 def extract_cap_on_liability(text: str) -> dict:
     attrs: dict = {}
     if m := p.CAP_MULTIPLE.search(text):
@@ -24,11 +20,13 @@ def extract_cap_on_liability(text: str) -> dict:
     return attrs
 
 
+# Extracts the carve-outs named in an uncapped liability clause.
 def extract_uncapped_liability(text: str) -> dict:
     carve_outs = sorted({m.group(0).lower() for m in p.UNCAPPED_CARVE_OUT_MARKERS.finditer(text)})
     return {"carve_outs": carve_outs}
 
 
+# Extracts notice days and which party may terminate for convenience.
 def extract_termination_for_convenience(text: str) -> dict:
     attrs: dict = {}
     if m := p.NOTICE_DAYS.search(text):
@@ -41,12 +39,14 @@ def extract_termination_for_convenience(text: str) -> dict:
     return attrs
 
 
+# Extracts the notice period required before a renewal lapses.
 def extract_notice_period_to_terminate_renewal(text: str) -> dict:
     if m := p.NOTICE_DAYS.search(text):
         return {"notice_days": int(m.group("days"))}
     return {}
 
 
+# Extracts whether a term auto-renews and for how many months.
 def extract_renewal_term(text: str) -> dict:
     attrs: dict = {"auto_renew": bool(p.AUTO_RENEW.search(text))}
     if m := p.RENEWAL_MONTHS.search(text):
@@ -54,12 +54,14 @@ def extract_renewal_term(text: str) -> dict:
     return attrs
 
 
+# Extracts the governing-law jurisdiction.
 def extract_governing_law(text: str) -> dict:
     if m := p.JURISDICTION.search(text):
         return {"jurisdiction": m.group("jurisdiction").strip()}
     return {}
 
 
+# Extracts whether assignment needs consent and whether change of control triggers it.
 def extract_anti_assignment(text: str) -> dict:
     lowered = text.lower()
     return {
@@ -68,6 +70,7 @@ def extract_anti_assignment(text: str) -> dict:
     }
 
 
+# Extracts audit notice days, frequency per year, and who bears the cost.
 def extract_audit_rights(text: str) -> dict:
     attrs: dict = {}
     if m := p.NOTICE_DAYS.search(text):
@@ -79,6 +82,7 @@ def extract_audit_rights(text: str) -> dict:
     return attrs
 
 
+# Maps a CUAD category name to the extractor function that handles it.
 EXTRACTORS_BY_CUAD_CATEGORY = {
     "Cap On Liability": extract_cap_on_liability,
     "Uncapped Liability": extract_uncapped_liability,
@@ -91,6 +95,7 @@ EXTRACTORS_BY_CUAD_CATEGORY = {
 }
 
 
+# Looks up the right extractor for a clause type and runs it, or returns nothing.
 def extract(cuad_category: str, text: str) -> dict:
     extractor = EXTRACTORS_BY_CUAD_CATEGORY.get(cuad_category)
     return extractor(text) if extractor else {}

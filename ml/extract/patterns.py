@@ -1,9 +1,4 @@
-"""Regex patterns for the eight v1 attributes.
-
-Each pattern is written against real CUAD phrasing, not a textbook example,
-which is why some look oddly specific -- "fees paid in the twelve (12)
-months" is how contracts actually say "lookback_months".
-"""
+# Regex patterns for the eight v1 attributes, written against real CUAD phrasing.
 from __future__ import annotations
 
 import re

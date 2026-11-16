@@ -1,10 +1,4 @@
-"""Stage 4: deterministic term extraction per clause type.
-
-Rules run first (ml/extract). The plan reserves a schema-validated LLM
-fallback for attributes rules miss; it is not wired into this slice -- see
-the TODO below -- so an unmatched attribute just stays absent, which the
-placement engine already treats as "condition cannot be satisfied".
-"""
+# Stage 4: deterministic term extraction per clause type. A missing attribute just stays absent.
 from __future__ import annotations
 
 from clausebook_core.models.firm import ClauseType
@@ -14,6 +8,7 @@ from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 
 
+# Runs rule-based extraction on every classified segment.
 class ExtractStage(Stage):
     name = "extract"
 
@@ -31,6 +26,5 @@ class ExtractStage(Stage):
                 ctx.findings.append(
                     {"segment": segment, "clause_type": clause_type, "attrs": attrs, "label": label}
                 )
-                # TODO(ml): run the LLM extractor (Pydantic-validated) only on
-                # attributes `attrs` left empty, per section 5's extraction row.
+                # TODO(ml): run the schema-validated LLM extractor only on attributes `attrs` left empty.
         return StageResult(ok=True, message=f"{len(ctx.findings)} candidate findings")

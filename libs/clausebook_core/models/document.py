@@ -1,4 +1,4 @@
-"""An uploaded contract and the segments it gets split into."""
+# An uploaded contract and the segments it gets split into.
 from __future__ import annotations
 
 import uuid
@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from clausebook_core.models.base import Base, UUIDPk, utcnow
 
 
+# An uploaded contract, deduped by content hash.
 class Document(Base, UUIDPk):
     __tablename__ = "document"
 
@@ -20,9 +21,8 @@ class Document(Base, UUIDPk):
     uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+# One clause-sized span of a document's text, in reading order.
 class Segment(Base, UUIDPk):
-    """One clause-sized span of a document's text, in reading order."""
-
     __tablename__ = "segment"
 
     document_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("document.id"))

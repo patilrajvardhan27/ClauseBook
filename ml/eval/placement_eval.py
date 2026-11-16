@@ -1,11 +1,4 @@
-"""Scores the placement engine against the 150 hand-labeled gold clauses.
-
-Each gold row carries the clause text, its clause type, the deal context it
-was reviewed under, and the position a lawyer actually assigned it to.
-Running the same text through extraction and the placement engine and
-comparing the result is the single strongest evaluation in the project,
-because it is the exact path a real review takes.
-"""
+# Scores the placement engine against the hand-labeled gold clauses.
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,6 +9,7 @@ from clausebook_core.placement.types import AttributeSpec, PositionSpec
 from ml.extract.extractors import extract
 
 
+# One hand-labeled clause: its text, deal context, and the position a lawyer actually assigned it to.
 @dataclass(frozen=True)
 class GoldClause:
     clause_id: str
@@ -25,6 +19,7 @@ class GoldClause:
     gold_matched_position_id: str
 
 
+# Placement accuracy and the rank confusion matrix over a gold set.
 @dataclass
 class PlacementEvalReport:
     total: int
@@ -36,6 +31,7 @@ class PlacementEvalReport:
         return self.matched_correct / self.total if self.total else 0.0
 
 
+# Runs extraction and placement on every gold clause and compares against its gold label.
 def evaluate_placement(
     gold: list[GoldClause],
     ladder_by_category: dict[str, list[PositionSpec]],

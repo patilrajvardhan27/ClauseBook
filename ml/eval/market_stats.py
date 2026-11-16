@@ -1,9 +1,4 @@
-"""Percentiles of deal terms across the precedent corpus.
-
-Backs the analytics page's "what counts as standard" view. Kept as a plain
-function over a list of numbers so a pandas recomputation in a test can
-check it against the exact same inputs with no database involved.
-"""
+# Percentiles of deal terms across the precedent corpus, for the analytics page.
 from __future__ import annotations
 
 import numpy as np
@@ -12,12 +7,14 @@ from sqlalchemy.orm import Session
 PERCENTILES = (10, 25, 50, 75, 90)
 
 
+# Computes the standard percentile set for a plain list of numbers.
 def percentiles_for_values(values: list[float]) -> dict[int, float]:
     if not values:
         return {p: 0.0 for p in PERCENTILES}
     return {p: float(np.percentile(values, p)) for p in PERCENTILES}
 
 
+# Computes per-attribute percentiles across all precedent for one clause type.
 def clause_type_percentiles(session: Session, clause_type_name: str) -> dict:
     from clausebook_core.models.firm import ClauseType
     from clausebook_core.models.playbook import Precedent

@@ -1,7 +1,4 @@
-"""Hybrid precedent search: BM25 plus kNN, fused with reciprocal rank fusion,
-filtered by clause type. See ml/retrieve/hybrid.py for the fusion itself;
-this router only shapes the request and the response.
-"""
+# Hybrid precedent search; the fusion itself lives in ml/retrieve/hybrid.py.
 from __future__ import annotations
 
 from clausebook_core.config.settings import Settings
@@ -13,6 +10,7 @@ from services.api.deps import get_app_settings
 router = APIRouter()
 
 
+# Runs a hybrid precedent search, optionally filtered by clause type.
 @router.get("")
 def search(q: str, clause_type: str | None = None, settings: Settings = Depends(get_app_settings)) -> dict:
     hits = hybrid_search(settings, query=q, clause_type=clause_type)

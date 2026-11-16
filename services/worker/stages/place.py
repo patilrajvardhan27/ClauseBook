@@ -1,9 +1,4 @@
-"""Stage 6: runs the placement engine on each candidate finding.
-
-Imports the same engine the API's preview endpoint uses (libs/clausebook_core),
-so a lawyer previewing a clause in the playbook editor and a clause going
-through a full review are judged by identical logic.
-"""
+# Stage 6: runs the same placement engine the API's preview endpoint uses, on each candidate finding.
 from __future__ import annotations
 
 from clausebook_core.placement.engine import place
@@ -13,6 +8,7 @@ from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 
 
+# Ladders and places every finding, holding off on positions already rejected.
 class PlaceStage(Stage):
     name = "place"
 
@@ -27,9 +23,8 @@ class PlaceStage(Stage):
             finding["placement"] = result
         return StageResult(ok=True)
 
+    # Finds positions this counterparty has already rejected for this clause type.
     def _rejected_positions(self, ctx: ReviewContext, clause_type_id) -> set[str]:
-        """Positions this counterparty has already rejected for this clause
-        type, read from prior findings in the same document family."""
         from clausebook_core.models.review import Finding
 
         rows = (

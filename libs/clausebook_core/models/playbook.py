@@ -1,9 +1,4 @@
-"""The ordered ladder of positions a firm will accept for a clause type.
-
-A playbook can be versioned and a firm can hold several (buy side, sell
-side, by practice group), because guidance changes over time and a past
-review has to stay explainable against the version it actually ran on.
-"""
+# The ordered ladder of positions a firm will accept for a clause type.
 from __future__ import annotations
 
 import uuid
@@ -16,6 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from clausebook_core.models.base import Base, UUIDPk
 
 
+# A versioned, side-specific set of positions; a past review stays pinned to its version.
 class Playbook(Base, UUIDPk):
     __tablename__ = "playbook"
 
@@ -29,12 +25,8 @@ class Playbook(Base, UUIDPk):
     positions: Mapped[list[Position]] = relationship(back_populates="playbook")
 
 
+# One ranked stance on a clause type: rank 0 is preferred, the last rank is the walk-away.
 class Position(Base, UUIDPk):
-    """One ordered stance on a clause type. Rank 0 is preferred language,
-    the last rank is the walk-away. Ordering is what makes fallback choice a
-    ranking problem rather than a retrieval problem: retrieval only finds
-    evidence, the rank decides what gets proposed."""
-
     __tablename__ = "position"
 
     playbook_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("playbook.id"))
@@ -49,11 +41,8 @@ class Position(Base, UUIDPk):
     approved_language: Mapped[list[ApprovedLanguage]] = relationship(back_populates="position")
 
 
+# What the extracted attributes must satisfy for a clause to sit at this position.
 class PositionCondition(Base, UUIDPk):
-    """What the extracted attributes must satisfy for a clause to count as
-    sitting at this position. Stored as data so a condition can change
-    without a code deploy."""
-
     __tablename__ = "position_condition"
 
     position_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("position.id"))
@@ -65,11 +54,8 @@ class PositionCondition(Base, UUIDPk):
     attribute = relationship("Attribute")
 
 
+# Deal context that switches a position on or off: party role, deal size, counterparty type.
 class AppliesWhen(Base, UUIDPk):
-    """Deal context that switches a position on or off: party role, deal
-    size band, counterparty type. Most playbook tools skip this and treat
-    guidance as context-free, which is where they go wrong on real deals."""
-
     __tablename__ = "applies_when"
 
     position_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("position.id"))
@@ -80,10 +66,8 @@ class AppliesWhen(Base, UUIDPk):
     position = relationship("Position", back_populates="applies_when")
 
 
+# Text a lawyer may insert for a position; a position can hold several variants.
 class ApprovedLanguage(Base, UUIDPk):
-    """The text a lawyer may actually insert for a position. A position can
-    hold several variants, each with a note on where it came from."""
-
     __tablename__ = "approved_language"
 
     position_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("position.id"))
@@ -93,11 +77,8 @@ class ApprovedLanguage(Base, UUIDPk):
     position = relationship("Position", back_populates="approved_language")
 
 
+# A real clause instance linked to the position it satisfies.
 class Precedent(Base, UUIDPk):
-    """A real clause instance linked to the position it satisfies, so a
-    proposal can say 'we accepted this before, in deal X' rather than just
-    'this text is similar'."""
-
     __tablename__ = "precedent"
 
     firm_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("firm.id"), nullable=True)

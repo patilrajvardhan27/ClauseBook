@@ -1,10 +1,4 @@
-"""Writes the eight clause types, their attributes and the sample playbook
-onto a fresh database. Idempotent: re-running finds existing rows by their
-natural key (cuad_category, attribute key, playbook name) and updates
-rather than duplicates them.
-
-Usage: PYTHONPATH=.:libs python3 pipelines/seed/run_seed.py
-"""
+# Seeds the sample playbook's clause types, attributes and positions. Run: PYTHONPATH=.:libs python3 pipelines/seed/run_seed.py
 from __future__ import annotations
 
 from clausebook_core.config.settings import get_settings
@@ -18,6 +12,7 @@ SAMPLE_FIRM_NAME = "Sample Firm (not a real firm -- public drafting guidance onl
 SAMPLE_PLAYBOOK_NAME = "Sample Sell-Side SaaS Playbook"
 
 
+# Seeds the sample firm, playbook and every clause-type ladder.
 def seed() -> None:
     settings = get_settings()
     factory = build_session_factory(settings)
@@ -34,6 +29,7 @@ def seed() -> None:
         print(f"Seeded playbook '{playbook.name}' with {len(SAMPLE_LADDERS)} clause-type ladders.")
 
 
+# Finds the sample firm by name, or creates it.
 def _get_or_create_firm(session) -> Firm:
     firm = session.query(Firm).filter(Firm.name == SAMPLE_FIRM_NAME).one_or_none()
     if firm is None:
@@ -43,6 +39,7 @@ def _get_or_create_firm(session) -> Firm:
     return firm
 
 
+# Finds the sample playbook by name, or creates it.
 def _get_or_create_playbook(session, firm_id) -> Playbook:
     playbook = session.query(Playbook).filter(Playbook.name == SAMPLE_PLAYBOOK_NAME).one_or_none()
     if playbook is None:
@@ -52,6 +49,7 @@ def _get_or_create_playbook(session, firm_id) -> Playbook:
     return playbook
 
 
+# Finds a clause type by its CUAD category, or creates it.
 def _get_or_create_clause_type(session, cuad_category: str) -> ClauseType:
     clause_type = session.query(ClauseType).filter(ClauseType.cuad_category == cuad_category).one_or_none()
     if clause_type is None:
@@ -61,6 +59,7 @@ def _get_or_create_clause_type(session, cuad_category: str) -> ClauseType:
     return clause_type
 
 
+# Finds an attribute by clause type and key, or creates it.
 def _get_or_create_attribute(session, clause_type_id, key, kind, higher_is_better) -> Attribute:
     attribute = (
         session.query(Attribute)
@@ -74,6 +73,7 @@ def _get_or_create_attribute(session, clause_type_id, key, kind, higher_is_bette
     return attribute
 
 
+# Clears a clause type's existing ladder on this playbook and writes the new rungs in its place.
 def _replace_positions(session, playbook_id, clause_type_id, attribute_id, rungs) -> None:
     existing = (
         session.query(Position)

@@ -1,9 +1,4 @@
-"""A Postgres-backed job queue and an outbox for OpenSearch indexing.
-
-Both run on the same database as the ontology, so a job's state and the
-review it belongs to commit in one transaction: there is no window where
-a job exists but its review does not, or the reverse.
-"""
+# A Postgres-backed job queue and an outbox for OpenSearch indexing.
 from __future__ import annotations
 
 from datetime import datetime
@@ -15,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from clausebook_core.models.base import Base, UUIDPk, utcnow
 
 
+# One queued unit of work, claimed with FOR UPDATE SKIP LOCKED.
 class Job(Base, UUIDPk):
     __tablename__ = "job"
 
@@ -26,6 +22,7 @@ class Job(Base, UUIDPk):
     locked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
+# An unpublished change waiting to be relayed into OpenSearch.
 class OutboxEvent(Base, UUIDPk):
     __tablename__ = "outbox_event"
 

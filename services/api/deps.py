@@ -1,4 +1,4 @@
-"""FastAPI dependencies: a DB session per request, settings as a singleton."""
+# FastAPI dependencies: a DB session per request, settings as a singleton.
 from __future__ import annotations
 
 from collections.abc import Generator
@@ -9,11 +9,13 @@ from clausebook_core.db.session import build_session_factory
 from sqlalchemy.orm import Session
 
 
+# Builds the process-wide session factory once.
 @lru_cache
 def _session_factory():
     return build_session_factory(get_settings())
 
 
+# Yields a DB session for one request, closing it afterward.
 def get_db() -> Generator[Session, None, None]:
     factory = _session_factory()
     session = factory()
@@ -23,5 +25,6 @@ def get_db() -> Generator[Session, None, None]:
         session.close()
 
 
+# Returns the current settings.
 def get_app_settings() -> Settings:
     return get_settings()

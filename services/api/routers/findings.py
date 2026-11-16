@@ -1,9 +1,4 @@
-"""Accept, reject or edit a proposed fallback.
-
-A reject writes a reason that feeds the rejected-position history (section
-4.3): the placement engine never re-proposes a position this counterparty
-has already turned down in the same document family.
-"""
+# Accept, reject or edit a proposed fallback; a reject feeds the rejected-position history.
 from __future__ import annotations
 
 import uuid
@@ -18,6 +13,7 @@ from services.api.schemas import FindingOut, FindingPatch
 router = APIRouter()
 
 
+# Fetches one finding.
 @router.get("/{finding_id}", response_model=FindingOut)
 def get_finding(finding_id: uuid.UUID, db: Session = Depends(get_db)) -> Finding:
     finding = db.get(Finding, finding_id)
@@ -26,6 +22,7 @@ def get_finding(finding_id: uuid.UUID, db: Session = Depends(get_db)) -> Finding
     return _to_out(finding)
 
 
+# Records a lawyer's accept, reject or edit decision on a finding.
 @router.patch("/{finding_id}", response_model=FindingOut)
 def decide_finding(finding_id: uuid.UUID, patch: FindingPatch, db: Session = Depends(get_db)) -> Finding:
     finding = db.get(Finding, finding_id)
@@ -42,6 +39,7 @@ def decide_finding(finding_id: uuid.UUID, patch: FindingPatch, db: Session = Dep
     return _to_out(finding)
 
 
+# Shapes a Finding row into the API's response dict.
 def _to_out(finding: Finding) -> dict:
     return {
         "id": finding.id,

@@ -1,10 +1,4 @@
-"""Pulls CUAD v1 and stores it unmodified, keyed by SHA-256.
-
-CUAD (510 commercial contracts, lawyer-labeled spans across 41 categories,
-CC BY 4.0) is the project's one real-world corpus. Bronze keeps exactly what
-was downloaded, so a bug discovered three layers downstream can always be
-traced back to the original file rather than a half-remembered transform.
-"""
+# Pulls CUAD v1 and stores it unmodified in bronze, keyed by SHA-256.
 from __future__ import annotations
 
 import hashlib
@@ -18,9 +12,8 @@ CUAD_URL = "https://zenodo.org/record/4595826/files/CUAD_v1.zip"
 BRONZE_DIR = Path("data/bronze/cuad")
 
 
+# Downloads the CUAD v1 archive once; a second call is a no-op unless force=True.
 def download(force: bool = False) -> Path:
-    """Downloads the CUAD v1 archive once; a second call is a no-op unless
-    force=True, which is the idempotency this stage promises."""
     BRONZE_DIR.mkdir(parents=True, exist_ok=True)
     archive_path = BRONZE_DIR / "CUAD_v1.zip"
 
@@ -36,6 +29,7 @@ def download(force: bool = False) -> Path:
     return archive_path
 
 
+# Records the download's source URL, license and SHA-256 next to the archive.
 def _write_manifest(archive_path: Path) -> None:
     sha256 = hashlib.sha256(archive_path.read_bytes()).hexdigest()
     manifest = {
@@ -47,8 +41,8 @@ def _write_manifest(archive_path: Path) -> None:
     (BRONZE_DIR / "manifest.json").write_text(json.dumps(manifest, indent=2))
 
 
+# Reads the single SQuAD-style JSON file CUAD ships its labels in.
 def extract_json(archive_path: Path) -> dict:
-    """CUAD ships its labels as a single SQuAD-style JSON inside the zip."""
     with zipfile.ZipFile(archive_path) as zf:
         json_names = [n for n in zf.namelist() if n.endswith(".json")]
         with zf.open(json_names[0]) as f:

@@ -1,11 +1,4 @@
-"""TF-IDF + one-vs-rest logistic regression multi-label baseline.
-
-This exists to give the fine-tuned transformer (ml/classify/transformer.py,
-trained separately once CUAD is pulled locally) a number to beat. A
-classifier that cannot clear a bag-of-words baseline is not worth the GPU
-time, so this runs first and the gate in eval/thresholds.yaml holds the
-line.
-"""
+# TF-IDF + one-vs-rest logistic regression multi-label baseline, the number the fine-tuned model must beat.
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,6 +10,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
+# A fitted TF-IDF vectorizer, label binarizer, classifier and per-class thresholds.
 @dataclass
 class BaselineClassifier:
     vectorizer: TfidfVectorizer
@@ -24,6 +18,7 @@ class BaselineClassifier:
     model: OneVsRestClassifier
     thresholds: dict[str, float]
 
+    # Fits the vectorizer, binarizer and classifier on a training set.
     @classmethod
     def fit(cls, texts: list[str], labels: list[list[str]]) -> BaselineClassifier:
         vectorizer = TfidfVectorizer(
@@ -41,10 +36,12 @@ class BaselineClassifier:
         thresholds = {label: 0.5 for label in binarizer.classes_}
         return cls(vectorizer=vectorizer, binarizer=binarizer, model=model, thresholds=thresholds)
 
+    # Returns per-class probabilities for a batch of texts.
     def predict_proba(self, texts: list[str]) -> np.ndarray:
         features = self.vectorizer.transform(texts)
         return self.model.predict_proba(features)
 
+    # Picks the labels whose probability clears each class's threshold.
     def predict_labels(self, texts: list[str]) -> list[list[str]]:
         probabilities = self.predict_proba(texts)
         results: list[list[str]] = []
@@ -57,7 +54,6 @@ class BaselineClassifier:
             results.append(picked)
         return results
 
+    # Updates per-class thresholds after eval tunes them on a validation split.
     def set_thresholds(self, thresholds: dict[str, float]) -> None:
-        """Called by ml/eval after tuning each class's threshold on a validation
-        split for precision at 80% recall, CUAD's own reporting metric."""
         self.thresholds.update(thresholds)

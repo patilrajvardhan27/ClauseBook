@@ -1,7 +1,4 @@
-"""Pydantic request/response models. The OpenAPI spec in contracts/openapi
-is generated from these, so the TypeScript client and this API never drift
-against each other.
-"""
+# Pydantic request/response models, the source contracts/openapi generates from.
 from __future__ import annotations
 
 import uuid
@@ -10,12 +7,12 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
+# Base for response models read straight off a SQLAlchemy row.
 class ORMModel(BaseModel):
-    """Base for response models read straight off a SQLAlchemy row."""
-
     model_config = ConfigDict(from_attributes=True)
 
 
+# An uploaded document.
 class DocumentOut(ORMModel):
     id: uuid.UUID
     title: str
@@ -24,6 +21,7 @@ class DocumentOut(ORMModel):
     uploaded_at: datetime
 
 
+# A playbook.
 class PlaybookOut(ORMModel):
     id: uuid.UUID
     firm_id: uuid.UUID
@@ -33,18 +31,21 @@ class PlaybookOut(ORMModel):
     published_at: datetime | None
 
 
+# The deal context a placement is evaluated against.
 class DealContext(BaseModel):
     party_role: str | None = None
     deal_size_band: str | None = None
     counterparty_type: str | None = None
 
 
+# Request body for starting a review.
 class ReviewCreate(BaseModel):
     document_id: uuid.UUID
     playbook_id: uuid.UUID
     deal_context: DealContext = DealContext()
 
 
+# A review run.
 class ReviewOut(ORMModel):
     id: uuid.UUID
     document_id: uuid.UUID
@@ -54,6 +55,7 @@ class ReviewOut(ORMModel):
     finished_at: datetime | None
 
 
+# One clause's finding.
 class FindingOut(ORMModel):
     id: uuid.UUID
     segment_id: uuid.UUID
@@ -67,18 +69,21 @@ class FindingOut(ORMModel):
     decision: str | None
 
 
+# Request body for accepting, rejecting or editing a finding.
 class FindingPatch(BaseModel):
     decision: str  # accepted | rejected | edited
     reason: str | None = None
     edited_text: str | None = None
 
 
+# Request body for previewing a pasted clause against a playbook.
 class PreviewRequest(BaseModel):
     clause_text: str
     clause_type_id: uuid.UUID
     deal_context: DealContext = DealContext()
 
 
+# What the placement engine decided for a previewed clause.
 class PreviewResponse(BaseModel):
     attrs: dict
     matched_position_id: uuid.UUID | None

@@ -1,5 +1,4 @@
-"""Upload a contract; dedupe by content hash so re-uploading the same file
-never creates a second document or a second review history for it."""
+# Upload a contract; dedupe by content hash so re-uploading never makes a second document.
 from __future__ import annotations
 
 import hashlib
@@ -19,6 +18,7 @@ router = APIRouter()
 DEV_FIRM_ID = uuid.UUID(int=0)
 
 
+# Uploads a document, returning the existing row if its hash already exists.
 @router.post("", response_model=DocumentOut, status_code=201)
 async def upload_document(file: UploadFile, db: Session = Depends(get_db)) -> Document:
     content = await file.read()
@@ -34,6 +34,7 @@ async def upload_document(file: UploadFile, db: Session = Depends(get_db)) -> Do
     return document
 
 
+# Fetches one document by id.
 @router.get("/{document_id}", response_model=DocumentOut)
 def get_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> Document:
     return db.get(Document, document_id)

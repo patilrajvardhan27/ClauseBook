@@ -1,7 +1,4 @@
-"""Backs POST /v1/playbooks/{id}/preview: places one pasted clause with no
-review, no document, no job queue. Lets a lawyer sanity-check a playbook
-position by pasting a clause straight into the editor.
-"""
+# Backs POST /v1/playbooks/{id}/preview: places one pasted clause with no review or job queue.
 from __future__ import annotations
 
 import uuid
@@ -14,6 +11,7 @@ from ml.extract.extractors import extract
 from services.api.domain.playbook_loader import load_attribute_specs, load_ladder
 
 
+# Extracts, ladders and places a pasted clause, with no document or review behind it.
 def preview_placement(
     session: Session,
     clause_text: str,

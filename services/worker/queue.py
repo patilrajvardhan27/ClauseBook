@@ -1,10 +1,4 @@
-"""A Postgres job queue using FOR UPDATE SKIP LOCKED.
-
-Chosen over a broker (ADR 1) so a job's state commits in the same
-transaction as the review it drives: there is no window where a job exists
-but the review row does not, or vice versa. Revisit only past roughly 50
-jobs per second, which a single-firm deployment will not reach.
-"""
+# A Postgres job queue using FOR UPDATE SKIP LOCKED, chosen over a broker (see ADR 1).
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -16,6 +10,7 @@ from sqlalchemy.orm import Session
 MAX_ATTEMPTS = 3
 
 
+# Claims and locks the next pending job of a given kind.
 def claim_next_job(session: Session, kind: str) -> Job | None:
     stmt = (
         select(Job)
@@ -33,11 +28,13 @@ def claim_next_job(session: Session, kind: str) -> Job | None:
     return job
 
 
+# Marks a job done.
 def complete_job(session: Session, job: Job) -> None:
     job.status = "done"
     session.flush()
 
 
+# Requeues a job if it has attempts left, else marks it permanently failed.
 def fail_job(session: Session, job: Job, error: str) -> None:
     job.status = "pending" if job.attempts < MAX_ATTEMPTS else "failed"
     session.flush()

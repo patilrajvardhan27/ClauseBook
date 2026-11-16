@@ -1,9 +1,4 @@
-"""Starts a review and streams its findings as they finish.
-
-A review is just a job plus an outbox row written in one transaction
-(services/worker picks it up); the SSE endpoint polls the same tables the
-worker writes to, so the API never talks to the worker directly.
-"""
+# Starts a review and streams its findings as they finish.
 from __future__ import annotations
 
 import uuid
@@ -20,6 +15,7 @@ from services.api.sse.review_stream import stream_review_events
 router = APIRouter()
 
 
+# Queues a review by writing the review row and its job in one transaction.
 @router.post("", status_code=202, response_model=ReviewOut)
 def start_review(payload: ReviewCreate, db: Session = Depends(get_db)) -> Review:
     review = Review(
@@ -40,12 +36,13 @@ def start_review(payload: ReviewCreate, db: Session = Depends(get_db)) -> Review
     return review
 
 
+# SSE stream of segment_found, finding_ready, progress, done and error events.
 @router.get("/{review_id}/events")
 def review_events(review_id: uuid.UUID, db: Session = Depends(get_db)):
-    """SSE stream: segment_found, finding_ready, progress, done, error."""
     return stream_review_events(db, review_id)
 
 
+# Fetches one review's current status.
 @router.get("/{review_id}", response_model=ReviewOut)
 def get_review(review_id: uuid.UUID, db: Session = Depends(get_db)) -> Review:
     review = db.get(Review, review_id)

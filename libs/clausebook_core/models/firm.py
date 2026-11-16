@@ -1,9 +1,4 @@
-"""Tenant boundary and the vocabulary every firm shares.
-
-A firm's playbook, positions and precedent all carry firm_id so Postgres
-row-level security can enforce isolation at the database layer, not just in
-application code that a future engineer might forget to check.
-"""
+# Tenant boundary (Firm) and the clause-type vocabulary every firm shares.
 from __future__ import annotations
 
 import uuid
@@ -18,6 +13,7 @@ if TYPE_CHECKING:
     from clausebook_core.models.playbook import Playbook
 
 
+# A firm, scoped by firm_id everywhere row-level security applies.
 class Firm(Base, UUIDPk):
     __tablename__ = "firm"
 
@@ -26,10 +22,8 @@ class Firm(Base, UUIDPk):
     playbooks: Mapped[list[Playbook]] = relationship(back_populates="firm")
 
 
+# A clause category shared between CUAD's taxonomy and a firm's own guidance.
 class ClauseType(Base, UUIDPk):
-    """Shared vocabulary mapped to CUAD categories, so training data and a
-    firm's own guidance meet on one key instead of two parallel taxonomies."""
-
     __tablename__ = "clause_type"
 
     cuad_category: Mapped[str] = mapped_column(String(120), unique=True)
@@ -38,10 +32,8 @@ class ClauseType(Base, UUIDPk):
     attributes: Mapped[list[Attribute]] = relationship(back_populates="clause_type")
 
 
+# A measurable term on a clause type, compared by rule rather than by text similarity.
 class Attribute(Base, UUIDPk):
-    """The measurable part of a clause type. Comparing a cap multiple by rule
-    is reliable; comparing the surrounding prose by similarity is not."""
-
     __tablename__ = "attribute"
 
     clause_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("clause_type.id"))

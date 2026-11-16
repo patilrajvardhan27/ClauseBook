@@ -1,5 +1,4 @@
-"""Pandera checks for the gold layer: every segment must have real
-boundaries and every category must come from the project's known set."""
+# Pandera checks for the gold layer: every segment needs real boundaries.
 from __future__ import annotations
 
 import pandas as pd
@@ -17,6 +16,7 @@ GOLD_SEGMENT_SCHEMA = DataFrameSchema(
 )
 
 
+# Validates a gold-layer dataframe of segments and checks start/end ordering.
 def validate_gold_segments(df: pd.DataFrame) -> pd.DataFrame:
     df = GOLD_SEGMENT_SCHEMA.validate(df)
     if (df["end_char"] < df["start_char"]).any():

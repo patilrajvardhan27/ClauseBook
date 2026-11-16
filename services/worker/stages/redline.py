@@ -1,10 +1,4 @@
-"""Stage 7: builds the minimal tracked-change diff and persists the finding.
-
-The LLM only adapts approved language to the extracted terms (e.g. swapping
-in the counterparty's own notice period into otherwise-approved wording);
-it never drafts freely, and its output here is plain string substitution
-until services/worker/wording.py's schema-validated LLM call is wired in.
-"""
+# Stage 7: builds the minimal tracked-change diff and persists the finding.
 from __future__ import annotations
 
 from clausebook_core.diff.minimal_diff import edit_distance_ratio, word_diff
@@ -14,6 +8,7 @@ from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 
 
+# Diffs each finding's approved language against the source text and writes the finding row.
 class RedlineStage(Stage):
     name = "redline"
 
@@ -49,6 +44,7 @@ class RedlineStage(Stage):
         ctx.session.flush()
         return StageResult(ok=True)
 
+    # Looks up the approved language text for a proposed position, if any.
     def _approved_text_for(self, ctx: ReviewContext, position_id: str | None) -> str | None:
         if position_id is None:
             return None
@@ -62,6 +58,7 @@ class RedlineStage(Stage):
         return row.text if row else None
 
 
+# Parses a string into a UUID, or returns None for a falsy value.
 def _uuid_or_none(value):
     import uuid
 

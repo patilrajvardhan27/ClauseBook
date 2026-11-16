@@ -1,4 +1,4 @@
-"""All ORM models, imported here once so Alembic autogenerate sees the full metadata."""
+# All ORM models, imported here once so Alembic autogenerate sees the full metadata.
 from clausebook_core.models.base import Base
 from clausebook_core.models.document import Document, Segment
 from clausebook_core.models.firm import Attribute, ClauseType, Firm

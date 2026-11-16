@@ -1,5 +1,4 @@
-"""Pandera checks for the silver layer: fails loudly on malformed CUAD rows
-before they reach gold, where a bad row is harder to trace back."""
+# Pandera checks for the silver layer: fails loudly on malformed CUAD rows before they reach gold.
 from __future__ import annotations
 
 import pandas as pd
@@ -17,5 +16,6 @@ SILVER_SPAN_SCHEMA = DataFrameSchema(
 )
 
 
+# Validates a silver-layer dataframe of CUAD spans against the schema above.
 def validate_silver_spans(df: pd.DataFrame) -> pd.DataFrame:
     return SILVER_SPAN_SCHEMA.validate(df)

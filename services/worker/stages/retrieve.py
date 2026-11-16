@@ -1,6 +1,4 @@
-"""Stage 5: attaches retrieved precedent to each candidate finding as
-supporting evidence, not as the basis for the placement decision itself
-(see place.py and the ranking note in clausebook_core.placement.engine)."""
+# Stage 5: attaches retrieved precedent to each finding as evidence, not as the placement decision itself.
 from __future__ import annotations
 
 from clausebook_core.config.settings import get_settings
@@ -10,6 +8,7 @@ from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 
 
+# Runs a hybrid search per finding and attaches the hits as evidence.
 class RetrieveStage(Stage):
     name = "retrieve"
 

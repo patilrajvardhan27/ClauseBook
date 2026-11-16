@@ -1,17 +1,11 @@
-"""The ranking algorithm that decides what to propose for a clause.
-
-Fallback selection is a ranking problem over an ordered set with
-conditions, not a retrieval problem. Retrieval (see ml/retrieve) only
-supplies evidence -- precedent that shows a position has been accepted
-before. The decision of which position to propose comes from the ladder
-order and the per-attribute rules below.
-"""
+# The ranking algorithm that decides what to propose for a clause.
 from __future__ import annotations
 
 from clausebook_core.placement.conditions import all_conditions_pass, applies_to_context
 from clausebook_core.placement.types import AttributeSpec, PlacementResult, PositionSpec
 
 
+# Ranks a clause against its playbook ladder and decides what to propose.
 def place(
     attrs: dict,
     ladder: list[PositionSpec],
@@ -63,15 +57,15 @@ def place(
     )
 
 
+# Finds where the counterparty's text sits today: the first position whose conditions all pass.
 def _first_satisfied(ladder: list[PositionSpec], attrs: dict) -> PositionSpec | None:
-    """Where the counterparty's text actually sits today: the first position
-    (lowest rank, so most favorable) whose conditions all pass."""
     for position in ladder:
         if all_conditions_pass(position.conditions, attrs):
             return position
     return None
 
 
+# Finds the lowest-rank unrejected position that beats the matched one on at least one attribute.
 def _best_unrejected_improvement(
     ladder: list[PositionSpec],
     matched: PositionSpec,
@@ -79,10 +73,6 @@ def _best_unrejected_improvement(
     attribute_specs: dict[str, AttributeSpec],
     rejected_position_ids: set[str],
 ) -> tuple[PositionSpec | None, list[str]]:
-    """The lowest-rank position ahead of the current match that (a) has not
-    already been rejected by this counterparty, and (b) is strictly better
-    than the matched position on at least one attribute. Rule (b) stops the
-    engine proposing a position that reads differently but concedes nothing."""
     candidates = [p for p in ladder if p.rank < matched.rank and p.id not in rejected_position_ids]
     candidates.sort(key=lambda p: p.rank)
 
@@ -94,12 +84,10 @@ def _best_unrejected_improvement(
     return None, []
 
 
+# Compares candidate and matched conditions by attribute key and declared direction, not text similarity.
 def _strictly_better_attributes(
     candidate: PositionSpec, matched: PositionSpec, attrs: dict, attribute_specs: dict[str, AttributeSpec]
 ) -> list[str]:
-    """A simplification kept honest: candidate conditions are compared to the
-    matched position's conditions on the same attribute key, using the
-    attribute's declared direction, not a text-similarity guess."""
     better: list[str] = []
     matched_by_key = {c.attribute_key: c for c in matched.conditions}
 

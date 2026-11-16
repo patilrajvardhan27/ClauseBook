@@ -1,6 +1,4 @@
-"""Market stats and override rates, computed from the corpus and from
-finding decisions respectively. Kept thin -- the actual math lives in
-ml/eval/market_stats.py so a pandas test can check it directly."""
+# Market stats and override rates; the math lives in ml/eval/market_stats.py.
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
@@ -12,11 +10,13 @@ from services.api.deps import get_db
 router = APIRouter()
 
 
+# Returns percentile stats for one clause type's attributes across the corpus.
 @router.get("/market/{clause_type}")
 def market_percentiles(clause_type: str, db: Session = Depends(get_db)) -> dict:
     return clause_type_percentiles(db, clause_type)
 
 
+# Returns how often reviewers reject a proposed finding.
 @router.get("/overrides")
 def override_rates(db: Session = Depends(get_db)) -> dict:
     from clausebook_core.models.review import Finding
