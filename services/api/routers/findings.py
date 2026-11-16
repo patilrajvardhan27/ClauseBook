@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import uuid
 
+from clausebook_core.models.review import Finding
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from clausebook_core.models.review import Finding
 from services.api.deps import get_db
 from services.api.schemas import FindingOut, FindingPatch
 

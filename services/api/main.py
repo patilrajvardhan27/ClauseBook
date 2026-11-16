@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from services.api.routers import documents, findings, playbooks, reviews, search, analytics
+from services.api.routers import analytics, documents, findings, playbooks, reviews, search
 
 app = FastAPI(title="Clausebook API", version="0.1.0")
 

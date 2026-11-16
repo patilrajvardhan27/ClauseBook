@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from clausebook_core.diff.minimal_diff import edit_distance_ratio, word_diff
 from clausebook_core.models.review import Finding
+
 from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 

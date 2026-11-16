@@ -7,11 +7,16 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy.orm import Session
-
 from clausebook_core.models.firm import Attribute
-from clausebook_core.models.playbook import Playbook, Position
-from clausebook_core.placement.types import AppliesWhenRule, AttributeSpec, Condition, Op, PositionSpec
+from clausebook_core.models.playbook import Position
+from clausebook_core.placement.types import (
+    AppliesWhenRule,
+    AttributeSpec,
+    Condition,
+    Op,
+    PositionSpec,
+)
+from sqlalchemy.orm import Session
 
 
 def load_ladder(session: Session, playbook_id: uuid.UUID, clause_type_id: uuid.UUID) -> list[PositionSpec]:

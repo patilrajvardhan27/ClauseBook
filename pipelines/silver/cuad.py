@@ -22,7 +22,6 @@ def normalize(cuad_json: dict) -> list[CuadSpan]:
     for entry in cuad_json.get("data", []):
         contract_title = entry.get("title", "")
         for paragraph in entry.get("paragraphs", []):
-            contract_text = paragraph.get("context", "")
             for qa in paragraph.get("qas", []):
                 category = _category_from_question(qa.get("question", ""))
                 for answer in qa.get("answers", []):

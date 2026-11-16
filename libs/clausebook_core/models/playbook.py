@@ -26,7 +26,7 @@ class Playbook(Base, UUIDPk):
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     firm = relationship("Firm", back_populates="playbooks")
-    positions: Mapped[list["Position"]] = relationship(back_populates="playbook")
+    positions: Mapped[list[Position]] = relationship(back_populates="playbook")
 
 
 class Position(Base, UUIDPk):
@@ -44,9 +44,9 @@ class Position(Base, UUIDPk):
     is_walk_away: Mapped[bool] = mapped_column(Boolean, default=False)
 
     playbook = relationship("Playbook", back_populates="positions")
-    conditions: Mapped[list["PositionCondition"]] = relationship(back_populates="position")
-    applies_when: Mapped[list["AppliesWhen"]] = relationship(back_populates="position")
-    approved_language: Mapped[list["ApprovedLanguage"]] = relationship(back_populates="position")
+    conditions: Mapped[list[PositionCondition]] = relationship(back_populates="position")
+    applies_when: Mapped[list[AppliesWhen]] = relationship(back_populates="position")
+    approved_language: Mapped[list[ApprovedLanguage]] = relationship(back_populates="position")
 
 
 class PositionCondition(Base, UUIDPk):

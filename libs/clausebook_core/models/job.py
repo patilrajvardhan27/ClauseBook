@@ -6,7 +6,6 @@ a job exists but its review does not, or the reverse.
 """
 from __future__ import annotations
 
-import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, Integer, String

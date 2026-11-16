@@ -34,7 +34,6 @@ class ClassifyStage(Stage):
         return self._predict_baseline(texts)
 
     def _predict_baseline(self, texts: list[str]) -> list[list[str]]:
-        from ml.classify.baseline import BaselineClassifier
 
         model = _load_cached_baseline()
         if model is None:
@@ -51,8 +50,8 @@ def _load_cached_baseline():
     has produced one from the full CUAD corpus."""
     global _CACHED_BASELINE
     if _CACHED_BASELINE is None:
-        from ml.classify.sample_training_set import SAMPLE_LABELS, SAMPLE_TEXTS
         from ml.classify.baseline import BaselineClassifier
+        from ml.classify.sample_training_set import SAMPLE_LABELS, SAMPLE_TEXTS
 
         _CACHED_BASELINE = BaselineClassifier.fit(SAMPLE_TEXTS, SAMPLE_LABELS)
     return _CACHED_BASELINE

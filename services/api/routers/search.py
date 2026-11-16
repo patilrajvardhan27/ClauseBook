@@ -4,9 +4,9 @@ this router only shapes the request and the response.
 """
 from __future__ import annotations
 
+from clausebook_core.config.settings import Settings
 from fastapi import APIRouter, Depends
 
-from clausebook_core.config.settings import Settings
 from ml.retrieve.hybrid import hybrid_search
 from services.api.deps import get_app_settings
 

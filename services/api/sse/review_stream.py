@@ -10,10 +10,9 @@ import asyncio
 import json
 import uuid
 
+from clausebook_core.models.review import Finding, Review
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-
-from clausebook_core.models.review import Finding, Review
 
 POLL_INTERVAL_SECONDS = 1.0
 

@@ -36,3 +36,6 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["clausebook_core*"]
 where = ["libs"]
+
+[tool.ruff.lint]
+ignore = ["B008"]  # FastAPI's Depends() in a default argument is the framework's documented pattern

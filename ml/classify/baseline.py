@@ -25,7 +25,7 @@ class BaselineClassifier:
     thresholds: dict[str, float]
 
     @classmethod
-    def fit(cls, texts: list[str], labels: list[list[str]]) -> "BaselineClassifier":
+    def fit(cls, texts: list[str], labels: list[list[str]]) -> BaselineClassifier:
         vectorizer = TfidfVectorizer(
             ngram_range=(1, 2), min_df=2, max_features=50_000, sublinear_tf=True, analyzer="word"
         )

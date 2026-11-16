@@ -4,10 +4,9 @@ from __future__ import annotations
 from collections.abc import Generator
 from functools import lru_cache
 
-from sqlalchemy.orm import Session
-
 from clausebook_core.config.settings import Settings, get_settings
 from clausebook_core.db.session import build_session_factory
+from sqlalchemy.orm import Session
 
 
 @lru_cache

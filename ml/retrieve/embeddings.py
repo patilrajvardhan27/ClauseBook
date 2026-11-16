@@ -9,7 +9,6 @@ from __future__ import annotations
 from functools import lru_cache
 
 import numpy as np
-
 from clausebook_core.config.settings import Settings
 
 

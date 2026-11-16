@@ -5,10 +5,10 @@ from __future__ import annotations
 import hashlib
 import uuid
 
+from clausebook_core.models.document import Document
 from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.orm import Session
 
-from clausebook_core.models.document import Document
 from services.api.deps import get_db
 from services.api.schemas import DocumentOut
 

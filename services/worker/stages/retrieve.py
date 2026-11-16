@@ -4,6 +4,7 @@ supporting evidence, not as the basis for the placement decision itself
 from __future__ import annotations
 
 from clausebook_core.config.settings import get_settings
+
 from ml.retrieve.hybrid import hybrid_search
 from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage

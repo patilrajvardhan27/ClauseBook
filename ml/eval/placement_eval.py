@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from clausebook_core.placement.engine import place
 from clausebook_core.placement.types import AttributeSpec, PositionSpec
+
 from ml.extract.extractors import extract
 
 

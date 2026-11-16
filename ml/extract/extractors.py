@@ -20,12 +20,12 @@ def extract_cap_on_liability(text: str) -> dict:
     if m := p.LOOKBACK_MONTHS.search(text):
         months = m.group("months")
         attrs["lookback_months"] = int(months) if months else 12
-    attrs["carve_outs"] = sorted(set(m.group(0).lower() for m in p.UNCAPPED_CARVE_OUT_MARKERS.finditer(text)))
+    attrs["carve_outs"] = sorted({m.group(0).lower() for m in p.UNCAPPED_CARVE_OUT_MARKERS.finditer(text)})
     return attrs
 
 
 def extract_uncapped_liability(text: str) -> dict:
-    carve_outs = sorted(set(m.group(0).lower() for m in p.UNCAPPED_CARVE_OUT_MARKERS.finditer(text)))
+    carve_outs = sorted({m.group(0).lower() for m in p.UNCAPPED_CARVE_OUT_MARKERS.finditer(text)})
     return {"carve_outs": carve_outs}
 
 

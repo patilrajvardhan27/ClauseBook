@@ -8,6 +8,7 @@ placement engine already treats as "condition cannot be satisfied".
 from __future__ import annotations
 
 from clausebook_core.models.firm import ClauseType
+
 from ml.extract.extractors import extract
 from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage

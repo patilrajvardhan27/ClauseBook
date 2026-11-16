@@ -6,11 +6,12 @@ index is a replay, never a data-loss incident.
 """
 from __future__ import annotations
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from datetime import UTC
 
 from clausebook_core.config.settings import Settings
 from clausebook_core.models.job import OutboxEvent
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 def relay_pending_events(session: Session, settings: Settings, batch_size: int = 100) -> int:
@@ -37,9 +38,9 @@ def relay_pending_events(session: Session, settings: Settings, batch_size: int =
     if actions:
         helpers.bulk(client, actions)
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     for event in events:
-        event.published_at = datetime.now(timezone.utc)
+        event.published_at = datetime.now(UTC)
     session.flush()
     return len(events)

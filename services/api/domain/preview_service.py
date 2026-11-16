@@ -6,12 +6,12 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy.orm import Session
-
 from clausebook_core.models.firm import ClauseType
 from clausebook_core.placement.engine import place
-from services.api.domain.playbook_loader import load_attribute_specs, load_ladder
+from sqlalchemy.orm import Session
+
 from ml.extract.extractors import extract
+from services.api.domain.playbook_loader import load_attribute_specs, load_ladder
 
 
 def preview_placement(

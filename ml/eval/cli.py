@@ -8,7 +8,6 @@ silently skipped here.
 from __future__ import annotations
 
 import csv
-import json
 from pathlib import Path
 
 from ml.eval.thresholds import load_thresholds
@@ -28,7 +27,6 @@ def run_extraction_suite() -> dict:
 
     correct = 0
     for row in rows:
-        deal_context = json.loads(row["deal_context_json"] or "{}")
         attrs = extract(row["cuad_category"], row["clause_text"])
         correct += 1 if attrs else 0  # exact-match-per-attribute needs the real labeled attrs; this is a presence check
 

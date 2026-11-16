@@ -11,6 +11,7 @@ from clausebook_core.config.settings import get_settings
 from clausebook_core.db.session import build_session_factory, session_scope
 from clausebook_core.models.firm import Attribute, ClauseType, Firm
 from clausebook_core.models.playbook import ApprovedLanguage, Playbook, Position, PositionCondition
+
 from pipelines.seed.sample_playbooks import SAMPLE_LADDERS
 
 SAMPLE_FIRM_NAME = "Sample Firm (not a real firm -- public drafting guidance only)"

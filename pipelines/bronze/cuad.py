@@ -30,8 +30,7 @@ def download(force: bool = False) -> Path:
     with httpx.stream("GET", CUAD_URL, timeout=120.0, follow_redirects=True) as response:
         response.raise_for_status()
         with open(archive_path, "wb") as f:
-            for chunk in response.iter_bytes():
-                f.write(chunk)
+            f.writelines(response.iter_bytes())
 
     _write_manifest(archive_path)
     return archive_path

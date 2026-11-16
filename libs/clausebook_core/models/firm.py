@@ -7,11 +7,15 @@ application code that a future engineer might forget to check.
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from clausebook_core.models.base import Base, UUIDPk
+
+if TYPE_CHECKING:
+    from clausebook_core.models.playbook import Playbook
 
 
 class Firm(Base, UUIDPk):
@@ -19,7 +23,7 @@ class Firm(Base, UUIDPk):
 
     name: Mapped[str] = mapped_column(String(200), unique=True)
 
-    playbooks: Mapped[list["Playbook"]] = relationship(back_populates="firm")
+    playbooks: Mapped[list[Playbook]] = relationship(back_populates="firm")
 
 
 class ClauseType(Base, UUIDPk):
@@ -31,7 +35,7 @@ class ClauseType(Base, UUIDPk):
     cuad_category: Mapped[str] = mapped_column(String(120), unique=True)
     name: Mapped[str] = mapped_column(String(120))
 
-    attributes: Mapped[list["Attribute"]] = relationship(back_populates="clause_type")
+    attributes: Mapped[list[Attribute]] = relationship(back_populates="clause_type")
 
 
 class Attribute(Base, UUIDPk):

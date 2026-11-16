@@ -5,6 +5,7 @@ meant to work regardless of parser."""
 from __future__ import annotations
 
 from clausebook_core.models.document import Document
+
 from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage
 

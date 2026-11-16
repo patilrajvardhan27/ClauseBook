@@ -7,6 +7,7 @@ through a full review are judged by identical logic.
 from __future__ import annotations
 
 from clausebook_core.placement.engine import place
+
 from services.api.domain.playbook_loader import load_attribute_specs, load_ladder
 from services.worker.context import ReviewContext, StageResult
 from services.worker.stage import Stage

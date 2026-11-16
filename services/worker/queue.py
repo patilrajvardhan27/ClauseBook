@@ -7,12 +7,11 @@ jobs per second, which a single-firm deployment will not reach.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from datetime import UTC, datetime
 
 from clausebook_core.models.job import Job
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 MAX_ATTEMPTS = 3
 
@@ -20,7 +19,7 @@ MAX_ATTEMPTS = 3
 def claim_next_job(session: Session, kind: str) -> Job | None:
     stmt = (
         select(Job)
-        .where(Job.kind == kind, Job.status == "pending", Job.run_after <= datetime.now(timezone.utc))
+        .where(Job.kind == kind, Job.status == "pending", Job.run_after <= datetime.now(UTC))
         .order_by(Job.run_after)
         .limit(1)
         .with_for_update(skip_locked=True)
@@ -28,7 +27,7 @@ def claim_next_job(session: Session, kind: str) -> Job | None:
     job = session.execute(stmt).scalar_one_or_none()
     if job is not None:
         job.status = "running"
-        job.locked_at = datetime.now(timezone.utc)
+        job.locked_at = datetime.now(UTC)
         job.attempts += 1
         session.flush()
     return job

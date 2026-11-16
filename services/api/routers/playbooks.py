@@ -7,12 +7,12 @@ reads exactly as it did when the review ran.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
+from clausebook_core.models.playbook import Playbook
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from clausebook_core.models.playbook import Playbook
 from services.api.deps import get_db
 from services.api.domain.preview_service import preview_placement
 from services.api.schemas import PlaybookOut, PreviewRequest, PreviewResponse
@@ -37,7 +37,7 @@ def create_playbook(name: str, side: str, firm_id: uuid.UUID, db: Session = Depe
 def publish_playbook(playbook_id: uuid.UUID, db: Session = Depends(get_db)) -> Playbook:
     playbook = db.get(Playbook, playbook_id)
     playbook.version += 1
-    playbook.published_at = datetime.now(timezone.utc)
+    playbook.published_at = datetime.now(UTC)
     db.flush()
     return playbook
 

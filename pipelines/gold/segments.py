@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from clausebook_core.segment import RawSegment, segment_text
+
 from pipelines.silver.cuad import CuadSpan
 
 OVERLAP_THRESHOLD = 0.5
