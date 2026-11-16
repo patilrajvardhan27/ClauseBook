@@ -8,6 +8,8 @@ place.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from clausebook_core.placement.types import Condition, Op
 
 
@@ -24,9 +26,15 @@ def check_condition(condition: Condition, attrs: dict) -> bool:
         case Op.EQ:
             return actual == condition.value
         case Op.IN:
-            return actual in condition.value
+            allowed = condition.value
+            if not isinstance(allowed, Iterable):
+                raise TypeError(f"'in' needs an iterable value, got {type(allowed).__name__}")
+            return actual in allowed
         case Op.CONTAINS_ALL:
-            return set(condition.value).issubset(set(actual))
+            required, actual_values = condition.value, actual
+            if not isinstance(required, Iterable) or not isinstance(actual_values, Iterable):
+                raise TypeError("'contains_all' needs an iterable condition value and attribute value")
+            return set(required).issubset(set(actual_values))
         case _:
             raise ValueError(f"Unknown operator: {condition.op}")
 
