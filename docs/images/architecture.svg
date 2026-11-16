@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="760" fill="#F4F1EA"/>
+
+  <!-- clients -->
+  <g>
+    <rect x="40" y="40" width="230" height="70" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="155" y="68" text-anchor="middle" font-size="15" fill="#1A1D21">Word add-in</text>
+    <text x="155" y="88" text-anchor="middle" font-size="12" fill="#5A5F66">Office.js, React, TS</text>
+
+    <rect x="40" y="130" width="230" height="70" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="155" y="158" text-anchor="middle" font-size="15" fill="#1A1D21">Web app</text>
+    <text x="155" y="178" text-anchor="middle" font-size="12" fill="#5A5F66">React, TS, Vite</text>
+  </g>
+
+  <!-- arrows to API -->
+  <path d="M270 75 H 420" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M270 165 H 420" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="345" y="60" text-anchor="middle" font-size="11" fill="#5A5F66">REST + SSE</text>
+
+  <!-- API -->
+  <rect x="420" y="40" width="320" height="160" fill="#FBFAF6" stroke="#13202B" stroke-width="1.5"/>
+  <text x="580" y="68" text-anchor="middle" font-size="16" fill="#1A1D21" font-weight="600">services/api (FastAPI)</text>
+  <text x="580" y="90" text-anchor="middle" font-size="12" fill="#5A5F66">auth, playbooks, documents, reviews, SSE</text>
+  <text x="580" y="110" text-anchor="middle" font-size="12" fill="#5A5F66">writes job + outbox rows in one transaction</text>
+  <rect x="440" y="130" width="280" height="50" fill="#F4F1EA" stroke="#D8D3C8"/>
+  <text x="580" y="150" text-anchor="middle" font-size="11" fill="#1A1D21" font-family="monospace">12 endpoints, OpenAPI contract-first</text>
+  <text x="580" y="168" text-anchor="middle" font-size="11" fill="#5A5F66">contracts/openapi/openapi.json</text>
+
+  <!-- down arrows to postgres / worker / opensearch -->
+  <path d="M520 200 V 260" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M640 200 V 260" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Postgres -->
+  <rect x="80" y="260" width="300" height="190" fill="#FBFAF6" stroke="#1E5B4A" stroke-width="1.5"/>
+  <text x="230" y="288" text-anchor="middle" font-size="15" fill="#1E5B4A" font-weight="600">PostgreSQL 16</text>
+  <text x="230" y="308" text-anchor="middle" font-size="12" fill="#5A5F66">ontology, playbook, position,</text>
+  <text x="230" y="324" text-anchor="middle" font-size="12" fill="#5A5F66">precedent, review, finding</text>
+  <text x="230" y="344" text-anchor="middle" font-size="12" fill="#5A5F66">job queue (FOR UPDATE SKIP LOCKED)</text>
+  <text x="230" y="364" text-anchor="middle" font-size="12" fill="#5A5F66">outbox_event</text>
+  <text x="230" y="384" text-anchor="middle" font-size="12" fill="#5A5F66">row-level security per firm_id</text>
+  <rect x="100" y="400" width="260" height="34" fill="#F4F1EA" stroke="#D8D3C8"/>
+  <text x="230" y="422" text-anchor="middle" font-size="11" fill="#1A1D21" font-family="monospace">source of truth</text>
+
+  <!-- Worker -->
+  <rect x="420" y="260" width="320" height="330" fill="#FBFAF6" stroke="#13202B" stroke-width="1.5"/>
+  <text x="580" y="288" text-anchor="middle" font-size="15" fill="#1A1D21" font-weight="600">services/worker</text>
+  <text x="580" y="306" text-anchor="middle" font-size="11" fill="#5A5F66">one stage per file, timed + traced</text>
+
+  <g font-size="12" fill="#1A1D21">
+    <rect x="450" y="320" width="260" height="30" fill="#F4F1EA" stroke="#D8D3C8"/>
+    <text x="580" y="340" text-anchor="middle">1. parse</text>
+    <rect x="450" y="356" width="260" height="30" fill="#F4F1EA" stroke="#D8D3C8"/>
+    <text x="580" y="376" text-anchor="middle">2. segment</text>
+    <rect x="450" y="392" width="260" height="30" fill="#F4F1EA" stroke="#D8D3C8"/>
+    <text x="580" y="412" text-anchor="middle">3. classify (ONNX / TF-IDF)</text>
+    <rect x="450" y="428" width="260" height="30" fill="#F4F1EA" stroke="#D8D3C8"/>
+    <text x="580" y="448" text-anchor="middle">4. extract (rules, LLM fallback)</text>
+    <rect x="450" y="464" width="260" height="30" fill="#F4F1EA" stroke="#D8D3C8"/>
+    <text x="580" y="484" text-anchor="middle">5. retrieve (hybrid search)</text>
+    <rect x="450" y="500" width="260" height="30" fill="#1E5B4A" stroke="#1E5B4A"/>
+    <text x="580" y="520" text-anchor="middle" fill="#FBFAF6" font-weight="600">6. place (ranking engine)</text>
+    <rect x="450" y="536" width="260" height="30" fill="#F4F1EA" stroke="#D8D3C8"/>
+    <text x="580" y="556" text-anchor="middle">7. redline (minimal diff)</text>
+  </g>
+
+  <!-- OpenSearch -->
+  <rect x="800" y="260" width="300" height="190" fill="#FBFAF6" stroke="#9A5B00" stroke-width="1.5"/>
+  <text x="950" y="288" text-anchor="middle" font-size="15" fill="#9A5B00" font-weight="600">OpenSearch 2.x</text>
+  <text x="950" y="308" text-anchor="middle" font-size="12" fill="#5A5F66">precedent index</text>
+  <text x="950" y="328" text-anchor="middle" font-size="12" fill="#5A5F66">BM25 + kNN, fused with RRF</text>
+  <text x="950" y="348" text-anchor="middle" font-size="12" fill="#5A5F66">cross-encoder rerank on top 50</text>
+  <rect x="820" y="364" width="260" height="34" fill="#F4F1EA" stroke="#D8D3C8"/>
+  <text x="950" y="386" text-anchor="middle" font-size="11" fill="#1A1D21" font-family="monospace">derived, rebuildable index</text>
+
+  <!-- outbox relay -->
+  <path d="M740 420 H 800" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="770" y="408" text-anchor="middle" font-size="10" fill="#5A5F66">outbox relay</text>
+  <path d="M800 480 H 740" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="770" y="498" text-anchor="middle" font-size="10" fill="#5A5F66">hybrid search</text>
+
+  <!-- postgres <-> worker -->
+  <path d="M380 340 H 420" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="400" y="330" text-anchor="middle" font-size="10" fill="#5A5F66">jobs</text>
+
+  <!-- LLM -->
+  <rect x="470" y="610" width="220" height="60" fill="#FBFAF6" stroke="#D8D3C8"/>
+  <text x="580" y="634" text-anchor="middle" font-size="13" fill="#1A1D21">LLM via LiteLLM</text>
+  <text x="580" y="652" text-anchor="middle" font-size="11" fill="#5A5F66">wording only, bounded + cached</text>
+  <path d="M580 590 V 610" stroke="#1A1D21" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- observability -->
+  <text x="600" y="730" text-anchor="middle" font-size="12" fill="#5A5F66">OpenTelemetry traces per stage &#183; Prometheus metrics: latency, tokens, cost per document</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#1A1D21"/>
+    </marker>
+  </defs>
+</svg>

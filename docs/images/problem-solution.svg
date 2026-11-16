@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="560" fill="#F4F1EA"/>
+  <text x="600" y="44" text-anchor="middle" font-size="20" fill="#1A1D21" font-weight="600">"Our fallbacks never come out right." &#8212; four failures, four answers</text>
+
+  <!-- column headers -->
+  <text x="220" y="90" text-anchor="middle" font-size="13" fill="#A3271F" font-weight="600">FAILURE</text>
+  <text x="620" y="90" text-anchor="middle" font-size="13" fill="#5A5F66" font-weight="600">WHY NAIVE TOOLS MISS IT</text>
+  <text x="1010" y="90" text-anchor="middle" font-size="13" fill="#1E5B4A" font-weight="600">CLAUSEBOOK'S ANSWER</text>
+  <line x1="40" y1="104" x2="1160" y2="104" stroke="#D8D3C8"/>
+
+  <!-- row template function via repeated groups -->
+  <g>
+    <!-- row 1 -->
+    <rect x="40" y="120" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="60" y="148" font-size="13" fill="#1A1D21" font-weight="600">Wrong clause type</text>
+    <text x="60" y="170" font-size="12" fill="#5A5F66">Classifier trained on headings;</text>
+    <text x="60" y="188" font-size="12" fill="#5A5F66">real clauses hide under "Misc."</text>
+
+    <rect x="420" y="120" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="440" y="155" font-size="12" fill="#5A5F66">Headings are an unreliable</text>
+    <text x="440" y="173" font-size="12" fill="#5A5F66">signal; the same clause type</text>
+    <text x="440" y="191" font-size="12" fill="#5A5F66">appears under many titles.</text>
+
+    <rect x="800" y="120" width="360" height="90" fill="#FBFAF6" stroke="#1E5B4A" stroke-width="1.5"/>
+    <text x="820" y="148" font-size="13" fill="#1E5B4A" font-weight="600">Classify clause text, not headings</text>
+    <text x="820" y="170" font-size="12" fill="#5A5F66">Multi-label, per-class thresholds,</text>
+    <text x="820" y="188" font-size="12" fill="#5A5F66">fine-tuned Legal-BERT vs. TF-IDF.</text>
+
+    <!-- row 2 -->
+    <rect x="40" y="220" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="60" y="248" font-size="13" fill="#1A1D21" font-weight="600">Wrong position detected</text>
+    <text x="60" y="270" font-size="12" fill="#5A5F66">Text similarity says "close to</text>
+    <text x="60" y="288" font-size="12" fill="#5A5F66">fallback 1" when the cap is 3x.</text>
+
+    <rect x="420" y="220" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="440" y="255" font-size="12" fill="#5A5F66">Embeddings capture tone and</text>
+    <text x="440" y="273" font-size="12" fill="#5A5F66">structure, not the one number</text>
+    <text x="440" y="291" font-size="12" fill="#5A5F66">that actually decides the deal.</text>
+
+    <rect x="800" y="220" width="360" height="90" fill="#FBFAF6" stroke="#1E5B4A" stroke-width="1.5"/>
+    <text x="820" y="248" font-size="13" fill="#1E5B4A" font-weight="600">Extract deal terms, compare by rule</text>
+    <text x="820" y="270" font-size="12" fill="#5A5F66">Cap multiple, notice days, carve-outs</text>
+    <text x="820" y="288" font-size="12" fill="#5A5F66">parsed and checked deterministically.</text>
+
+    <!-- row 3 -->
+    <rect x="40" y="320" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="60" y="348" font-size="13" fill="#1A1D21" font-weight="600">Wrong fallback chosen</text>
+    <text x="60" y="370" font-size="12" fill="#5A5F66">Picks the most similar approved</text>
+    <text x="60" y="388" font-size="12" fill="#5A5F66">text, not the best acceptable one.</text>
+
+    <rect x="420" y="320" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="440" y="355" font-size="12" fill="#5A5F66">Retrieval ranks by similarity,</text>
+    <text x="440" y="373" font-size="12" fill="#5A5F66">not by where a position sits</text>
+    <text x="440" y="391" font-size="12" fill="#5A5F66">on the firm's ordered ladder.</text>
+
+    <rect x="800" y="320" width="360" height="90" fill="#FBFAF6" stroke="#1E5B4A" stroke-width="1.5"/>
+    <text x="820" y="348" font-size="13" fill="#1E5B4A" font-weight="600">Rank over an ordered set</text>
+    <text x="820" y="370" font-size="12" fill="#5A5F66">Best position not yet rejected,</text>
+    <text x="820" y="388" font-size="12" fill="#5A5F66">filtered by deal context.</text>
+
+    <!-- row 4 -->
+    <rect x="40" y="420" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="60" y="448" font-size="13" fill="#1A1D21" font-weight="600">Bad redline</text>
+    <text x="60" y="470" font-size="12" fill="#5A5F66">Replaces the whole clause;</text>
+    <text x="60" y="488" font-size="12" fill="#5A5F66">lawyers reject it on sight.</text>
+
+    <rect x="420" y="420" width="360" height="90" fill="#FBFAF6" stroke="#D8D3C8"/>
+    <text x="440" y="455" font-size="12" fill="#5A5F66">A full replacement costs as</text>
+    <text x="440" y="473" font-size="12" fill="#5A5F66">much to review as drafting it</text>
+    <text x="440" y="491" font-size="12" fill="#5A5F66">again from scratch.</text>
+
+    <rect x="800" y="420" width="360" height="90" fill="#FBFAF6" stroke="#1E5B4A" stroke-width="1.5"/>
+    <text x="820" y="448" font-size="13" fill="#1E5B4A" font-weight="600">Word-level minimal diff</text>
+    <text x="820" y="470" font-size="12" fill="#5A5F66">Tracked-change insert/delete</text>
+    <text x="820" y="488" font-size="12" fill="#5A5F66">hunks, not a block swap.</text>
+  </g>
+
+  <text x="600" y="540" text-anchor="middle" font-size="13" fill="#1A1D21" font-style="italic">
+    Fallback selection is a ranking problem over an ordered set with conditions &#8212; retrieval only supplies evidence.
+  </text>
+</svg>

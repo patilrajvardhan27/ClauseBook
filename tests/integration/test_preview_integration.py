@@ -11,11 +11,11 @@ from __future__ import annotations
 import uuid
 
 import pytest
-
 from clausebook_core.config.settings import get_settings
 from clausebook_core.db.session import build_session_factory, session_scope
 from clausebook_core.models.firm import Attribute, ClauseType, Firm
 from clausebook_core.models.playbook import Playbook, Position, PositionCondition
+
 from services.api.domain.preview_service import preview_placement
 
 pytestmark = pytest.mark.integration
