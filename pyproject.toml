@@ -41,4 +41,7 @@ where = ["libs"]
 ignore = ["B008"]  # FastAPI's Depends() in a default argument is the framework's documented pattern
 
 [tool.pytest.ini_options]
-markers = ["integration: requires a live Postgres, set via CLAUSEBOOK_DATABASE_URL"]
+markers = [
+    "integration: requires a live Postgres, set via CLAUSEBOOK_DATABASE_URL",
+    "opensearch: requires a live, seeded Postgres and OpenSearch stack",
+]
