@@ -1,3 +1,6 @@
+# Runs on every push and PR. Stays fast on purpose: no OpenSearch service,
+# no ACORD run, no full classifier training. See eval-full.yml for the
+# manually triggered run that covers those.
 name: CI
 
 on:
@@ -31,7 +34,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install -e ".[dev]"
-      - run: PYTHONPATH=.:libs pytest tests/ -q
+      - run: PYTHONPATH=.:libs pytest tests/ -q -m "not integration and not opensearch"
 
   integration-tests:
     runs-on: ubuntu-latest

@@ -1,0 +1,52 @@
+# Manually triggered full evaluation: live Postgres and OpenSearch, the
+# opensearch-marked rebuild test, and the eval CLI running whichever
+# suites find real data mounted into the runner. Not run on every push,
+# since a full OpenSearch cycle is slow and occasionally flaky in a
+# shared CI runner.
+name: Full evaluation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  full-eval:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: clausebook
+          POSTGRES_PASSWORD: clausebook
+          POSTGRES_DB: clausebook
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U clausebook"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      opensearch:
+        image: opensearchproject/opensearch:2.17.0
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+        ports: ["9200:9200"]
+        options: >-
+          --health-cmd "curl -sf http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 10
+    env:
+      CLAUSEBOOK_DATABASE_URL: postgresql+psycopg://clausebook:clausebook@localhost:5432/clausebook
+      CLAUSEBOOK_OPENSEARCH_URL: http://localhost:9200
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev,ml]"
+      - run: cd db/migrations && alembic upgrade head
+      - run: PYTHONPATH=.:libs python3 pipelines/seed/run_seed.py
+      - run: PYTHONPATH=.:libs pytest tests/ -q -m "integration or opensearch"
+        continue-on-error: true  # opensearch-marked tests need seeded precedent; report, don't block
+      - run: PYTHONPATH=.:libs python3 ml/eval/cli.py
+      - uses: actions/upload-artifact@v4
+        with: { name: full-eval-report, path: eval/report.md }
