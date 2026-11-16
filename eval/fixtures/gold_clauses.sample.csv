@@ -1,0 +1,4 @@
+clause_id,cuad_category,clause_text,deal_context_json,gold_matched_position_id,gold_proposed_position_id,labeled_by
+gold-sample-001,Termination For Convenience,"Either party may terminate this Agreement for convenience upon 30 days written notice.",{},rank-2-30-days,rank-0-90-days,illustrative
+gold-sample-002,Cap On Liability,"Liability shall not exceed two (2) times the fees paid in the preceding twelve (12) months.",{},rank-1-2x,,illustrative
+gold-sample-003,Governing Law,"This Agreement shall be governed by the laws of the State of New York.",{},rank-1-new-york,rank-0-delaware,illustrative

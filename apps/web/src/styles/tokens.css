@@ -1,0 +1,40 @@
+/* Design tokens from the plan's section 13. Warm paper background, no
+   shadows or gradients, rectangular panels with a hairline rule. */
+:root {
+  --cb-paper: #f4f1ea;
+  --cb-surface: #fbfaf6;
+  --cb-ink: #1a1d21;
+  --cb-ink-muted: #5a5f66;
+  --cb-night: #13202b;
+  --cb-green: #1e5b4a;
+  --cb-amber: #9a5b00;
+  --cb-red: #a3271f;
+  --cb-line: #d8d3c8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--cb-paper);
+  color: var(--cb-ink);
+  font-family: "Public Sans", system-ui, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: "Newsreader", Georgia, serif;
+  font-weight: 500;
+}
+
+.cb-mono { font-family: "IBM Plex Mono", monospace; }
+
+.cb-panel {
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-line);
+  border-radius: 2px;
+  padding: 1.5rem;
+}
+
+.cb-rule { border: none; border-top: 1px solid var(--cb-line); }
+
+a { color: var(--cb-green); }

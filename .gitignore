@@ -51,3 +51,7 @@ ml/checkpoints/
 # Editors
 .vscode/
 .idea/
+
+# npm workspaces
+apps/*/dist/
+packages/*/dist/

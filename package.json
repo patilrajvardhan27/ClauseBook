@@ -1,0 +1,14 @@
+{
+  "name": "clausebook",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:web": "npm run build --workspace=@clausebook/web",
+    "build:addin": "npm run build --workspace=@clausebook/addin",
+    "check:file-length": "node scripts/check-file-length.mjs"
+  }
+}
