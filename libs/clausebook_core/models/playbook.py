@@ -82,9 +82,11 @@ class Precedent(Base, UUIDPk):
     __tablename__ = "precedent"
 
     firm_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("firm.id"), nullable=True)
-    source: Mapped[str] = mapped_column(String(50))  # cuad | firm
+    source: Mapped[str] = mapped_column(String(50))  # cuad | firm | acord
     document_id: Mapped[str] = mapped_column(String(200))
     clause_text: Mapped[str] = mapped_column(String)
-    clause_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("clause_type.id"))
+    # Nullable because a retrieval-only corpus (ACORD) has no single CUAD category per clause;
+    # CUAD-derived precedent always sets this.
+    clause_type_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("clause_type.id"), nullable=True)
     position_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("position.id"), nullable=True)
     attrs_json: Mapped[dict] = mapped_column(JSONB, default=dict)

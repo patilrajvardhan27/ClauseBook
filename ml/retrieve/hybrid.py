@@ -34,15 +34,18 @@ def hybrid_search(
     return fused[:top_k]
 
 
-# Runs a BM25 text match, optionally filtered by clause type; returns (id, clause_text) pairs.
+# Runs a BM25 text match, optionally filtered by clause type; returns (document_id, clause_text) pairs.
+# document_id (not OpenSearch's internal _id) is what gets returned: it's the stable id a seeding
+# script assigned (contract_id#ord for CUAD, acord:<corpus_id> for ACORD), so a fixture built from
+# these results still matches after the index is dropped and reseeded with fresh internal ids.
 def _bm25_search(client, settings: Settings, query: str, clause_type: str | None, size: int) -> list[tuple[str, str]]:
     filters = [{"term": {"clause_type": clause_type}}] if clause_type else []
     body = {"size": size, "query": {"bool": {"must": [{"match": {"clause_text": query}}], "filter": filters}}}
     response = client.search(index=settings.opensearch_index_precedent, body=body)
-    return [(hit["_id"], hit["_source"].get("clause_text", "")) for hit in response["hits"]["hits"]]
+    return [(hit["_source"]["document_id"], hit["_source"].get("clause_text", "")) for hit in response["hits"]["hits"]]
 
 
-# Runs a kNN search on the query's embedding, optionally filtered by clause type; returns (id, clause_text) pairs.
+# Runs a kNN search on the query's embedding, optionally filtered by clause type; returns (document_id, clause_text) pairs.
 def _knn_search(client, settings: Settings, query: str, clause_type: str | None, size: int) -> list[tuple[str, str]]:
     from ml.retrieve.embeddings import embed_text
 
@@ -58,7 +61,7 @@ def _knn_search(client, settings: Settings, query: str, clause_type: str | None,
         },
     }
     response = client.search(index=settings.opensearch_index_precedent, body=body)
-    return [(hit["_id"], hit["_source"].get("clause_text", "")) for hit in response["hits"]["hits"]]
+    return [(hit["_source"]["document_id"], hit["_source"].get("clause_text", "")) for hit in response["hits"]["hits"]]
 
 
 # Combines several ranked (id, clause_text) lists into one score per document, keeping each id's text.

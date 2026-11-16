@@ -65,7 +65,9 @@ def draw_sample() -> int:
     candidates = _read_candidates()
     contract_counts: dict[str, int] = defaultdict(int)
 
-    per_category_target = max(MIN_PER_CATEGORY, TARGET_TOTAL // len(V1_CATEGORIES))
+    # Round up so 8 categories sharing 150 unevenly still reach the total, rather than
+    # falling short by however much integer division drops.
+    per_category_target = max(MIN_PER_CATEGORY, -(-TARGET_TOTAL // len(V1_CATEGORIES)))
     picked_rows: list[tuple[str, dict]] = []
 
     for category in V1_CATEGORIES:

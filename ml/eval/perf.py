@@ -1,11 +1,4 @@
 # Runs a batch of contracts through a live API, timing each review and reporting p50/p95.
-#
-# Needs `docker compose up` running (see deploy/docker-compose.yml). Feed
-# it 20+ contracts, including at least one 100+ pages, to get numbers
-# worth reporting. Profile a slow run separately with py-spy; this script
-# only times the review, it doesn't profile it.
-#
-# Usage: PYTHONPATH=.:libs python3 ml/eval/perf.py path/to/contracts/*.docx
 from __future__ import annotations
 
 import sys
@@ -38,7 +31,8 @@ def _get_sample_playbook_id(client: httpx.Client) -> str:
             return playbook["id"]
     raise RuntimeError(f"Playbook '{PLAYBOOK_NAME}' not found; run pipelines/seed/run_seed.py first")
 
-# Uploads one document and times its review to first finding and to completion.
+# Uploads one document and times its review to first finding and to completion, reading the SSE
+# stream directly rather than polling status, so "time to first finding" means what it says.
 def _time_one_review(client: httpx.Client, playbook_id: str, contract_path: Path) -> ReviewTiming:
     with contract_path.open("rb") as f:
         upload = client.post(f"{API_BASE_URL}/v1/documents", files={"file": f})
@@ -51,22 +45,21 @@ def _time_one_review(client: httpx.Client, playbook_id: str, contract_path: Path
     review_id = review.json()["id"]
 
     first_finding_time = None
-    deadline = start + POLL_TIMEOUT_SECONDS
-    while time.monotonic() < deadline:
-        status = client.get(f"{API_BASE_URL}/v1/reviews/{review_id}")
-        status.raise_for_status()
-        body = status.json()
-        if first_finding_time is None and body["status"] in ("running", "done"):
-            first_finding_time = time.monotonic()
-        if body["status"] in ("done", "error"):
-            break
-        time.sleep(POLL_INTERVAL_SECONDS)
+    with client.stream("GET", f"{API_BASE_URL}/v1/reviews/{review_id}/events", timeout=POLL_TIMEOUT_SECONDS) as stream:
+        event_name = None
+        for line in stream.iter_lines():
+            if line.startswith("event: "):
+                event_name = line.removeprefix("event: ").strip()
+                if event_name in ("done", "error"):
+                    break
+            elif line.startswith("data: ") and event_name == "finding_ready" and first_finding_time is None:
+                first_finding_time = time.monotonic()
 
     total_time = time.monotonic() - start
     return ReviewTiming(
         contract_path=str(contract_path),
         pages=0,  # filled in by the document row once parsing reports a real page count
-        time_to_first_finding_s=(first_finding_time or total_time) - start,
+        time_to_first_finding_s=(first_finding_time or time.monotonic()) - start,
         total_time_s=total_time,
     )
 

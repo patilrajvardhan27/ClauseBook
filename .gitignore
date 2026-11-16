@@ -41,6 +41,7 @@ dist/
 data/bronze/
 data/silver/
 data/gold/
+data/uploads/
 *.onnx
 *.ckpt
 ml/checkpoints/

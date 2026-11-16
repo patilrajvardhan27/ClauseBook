@@ -15,12 +15,16 @@ def _session_factory():
     return build_session_factory(get_settings())
 
 
-# Yields a DB session for one request, closing it afterward.
+# Yields a DB session for one request, committing on a clean request and rolling back otherwise.
 def get_db() -> Generator[Session, None, None]:
     factory = _session_factory()
     session = factory()
     try:
         yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
     finally:
         session.close()
 

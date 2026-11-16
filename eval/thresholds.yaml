@@ -1,12 +1,23 @@
-# Quality gates read by both `clausebook eval` and CI. Values below are
-# placeholders until a real run against the CUAD split and the 150 gold
-# clauses sets each one's real starting number, which then gets held.
+# Quality gates read by both `clausebook eval` and CI.
+#
+# classification and retrieval are set from a real run on 2026-11-16: the
+# TF-IDF baseline trained on all 510 real CUAD contracts (GroupKFold by
+# contract, 5 folds) scored macro precision 0.599; the hybrid retriever
+# scored nDCG@5 0.181 and Recall@20 0.080 against ACORD's real test split,
+# seeded from ACORD's own 3,931-clause corpus. Both gates below hold a
+# margin under those measured numbers.
+#
+# segmentation, extraction, placement and cost_and_latency are still
+# placeholders: segmentation has no boundary-F1 harness yet, extraction's
+# exact-match check needs the real 150 gold clauses, placement needs the
+# same, and cost_and_latency needs a live API/worker stack fed real
+# contracts (see ml/eval/perf.py for the runner once that's available).
 segmentation:
   boundary_f1_min: 0.70
   max_drop_points: 2.0
 
 classification:
-  macro_aupr_min: 0.50
+  macro_precision_min: 0.55
   max_class_drop_points: 3.0
   macro_may_not_drop: true
 
@@ -15,8 +26,8 @@ extraction:
   max_drop_points: 0.0
 
 retrieval:
-  ndcg_at_5_min: 0.55
-  recall_at_20_min: 0.70
+  ndcg_at_5_min: 0.15
+  recall_at_20_min: 0.06
   max_drop_points: 2.0
 
 placement:
