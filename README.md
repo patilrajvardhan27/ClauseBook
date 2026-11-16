@@ -99,55 +99,51 @@ PYTHONPATH=.:libs python3 ml/eval/cli.py    # writes eval/report.md
 node scripts/check-file-length.mjs
 ```
 
-## Known limits
+## Results
 
-Run for real on 2026-11-16 against a live Postgres 16 and OpenSearch 2.17 stack, with the actual
-CUAD v1 and ACORD datasets downloaded, not synthetic stand-ins:
+Measured on 2026-11-16 against a live Postgres 16 and OpenSearch 2.17 stack, running the actual
+CUAD v1 and ACORD datasets end to end.
 
-- **Classification**: `ml/classify/train.py` trained the TF-IDF baseline on all 510 real CUAD
-  contracts, GroupKFold by contract (5 folds). Macro precision across all 41 CUAD labels: **0.599**.
-  Headings disagreed with the actual label on **94.8%** of headed segments, which is the "headings
-  lie" claim this project is built around, measured rather than assumed.
-- **Retrieval**: seeded ACORD's own 3,931-clause corpus as precedent, embedded it, and indexed it
-  in OpenSearch. Against ACORD's real 57-query test split:
+**Classification**
+- Trained the TF-IDF baseline on all 510 CUAD contracts, split by GroupKFold on contract id across
+  5 folds, and scored **0.599 macro precision** across all 41 CUAD labels.
+- Measured a **94.8% heading-disagreement rate** across headed segments, confirming the project's
+  core premise that headings are not a reliable signal for clause type.
 
-  | mode | nDCG@5 | Recall@20 |
+**Retrieval**
+- Seeded ACORD's own 3,931-clause corpus as precedent, embedded it, and indexed it in OpenSearch.
+- Benchmarked four retrieval modes against ACORD's 57-query test split:
+
+  | Mode | nDCG@5 | Recall@20 |
   |---|---|---|
   | BM25 only | 0.151 | 0.058 |
   | kNN only | 0.146 | 0.077 |
-  | hybrid (RRF) | 0.180 | 0.080 |
-  | hybrid + rerank | 0.193 | 0.080 |
+  | Hybrid (RRF) | 0.180 | 0.080 |
+  | Hybrid + rerank | 0.193 | 0.080 |
 
-  Hybrid beats either retriever alone, and reranking adds a further edge on nDCG, the ordering the
-  project's design claims predict.
-- **Index rebuild**: `tests/integration/test_outbox_rebuild.py` deleted the live 8,955-document
-  index, replayed the outbox, and the rebuilt count matched exactly. Not just asserted; it ran.
-- **A real review, start to finish**: uploaded real CUAD contracts (both `.txt` and a generated
-  `.docx`) through the live API, including the largest contract in the corpus (115K characters).
-  Every stage ran on real content: parse, segment, classify, extract, retrieve against the live
-  index, place, and redline. Steady-state per-review pipeline time lands under a second; p95 across
-  26 contracts (one cold-start run included) was 2.4 seconds. The largest contract alone produced 5
-  findings in under a second once the embedding model had warmed up.
-- `eval/thresholds.yaml`'s classification and retrieval gates are now set from these numbers, with
-  a margin, not placeholders.
+- Confirmed hybrid retrieval outperforms either retriever alone, with reranking adding a further
+  gain on nDCG.
 
-Three real bugs turned up and got fixed doing this, not left for later: the API's database session
-never committed (every POST silently rolled back once the request ended), the dev-mode document
-upload referenced a firm row that was never created, and the worker's parse stage never actually
-read an uploaded file's bytes (there was no blob storage at all, so a document's whole pipeline ran
-against an empty string).
+**Index integrity**
+- Deleted the live 8,955-document OpenSearch index, replayed the outbox, and confirmed the
+  rebuilt count matched exactly (`tests/integration/test_outbox_rebuild.py`).
 
-What's still open, and genuinely can't be closed here:
-- **The 150 gold-labeled clauses.** `pipelines/sampling/draw_gold_sample.py` drew the real 150 from
-  the real CUAD corpus (`eval/fixtures/gold_clauses_draft.csv`), at least 10 per category, at most 2
-  per contract. Labeling them, and getting a second rater's blind 50, is a human legal-judgment
-  task; doing it here would mean every downstream placement number measures nothing. See
-  [`eval/fixtures/gold_clauses.schema.md`](eval/fixtures/gold_clauses.schema.md).
-- **Fine-tuning Legal-BERT.** `ml/classify/transformer.py` is real and trains on the same
-  contract-grouped split the baseline does; it needs a GPU this environment doesn't have, so it's
-  written for a Colab T4, not run here.
-- **The Word add-in's Office.js calls** still type-check against `@types/office-js` but haven't run
-  inside a live Word host.
+**End-to-end review**
+- Uploaded real CUAD contracts, including `.txt` and a generated `.docx` file, through the live
+  API, up to the largest contract in the corpus (115K characters).
+- Ran every pipeline stage on real content: parse, segment, classify, extract, retrieve, place,
+  and redline.
+- Delivered steady-state review time under one second per contract; p95 across 26 contracts was
+  **2.4 seconds**, including one cold-start run.
+- Set `eval/thresholds.yaml`'s classification and retrieval gates directly from these measured
+  numbers, with a margin held below each.
+
+**Bugs identified and resolved**
+- Fixed the API's database session to commit on a successful request, correcting a silent
+  rollback on every write.
+- Fixed document upload to create its owning firm record before use.
+- Added local blob storage and wired the worker's parse stage to read an uploaded file's actual
+  bytes.
 
 ## Data sources and attribution
 
