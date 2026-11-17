@@ -26,7 +26,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "ruff>=0.7", "mypy>=1.13"]
-ml = ["torch>=2.5", "transformers>=4.46", "onnx>=1.17", "onnxruntime>=1.20", "datasets>=3.1"]
+ml = ["torch>=2.5", "transformers>=4.46", "onnx>=1.17", "onnxruntime>=1.20", "datasets>=3.1", "accelerate>=1.1"]
 
 [tool.ruff]
 line-length = 100
